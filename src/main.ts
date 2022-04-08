@@ -1,7 +1,4 @@
-/**
- * Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
- * Omar Muhammad
- */
+// Authors: Omar Muhammad
 
 import 'phaser'
 import Game from './scenes/game'

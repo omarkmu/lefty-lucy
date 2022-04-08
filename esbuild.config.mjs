@@ -1,5 +1,5 @@
 // adapted from Obsidian plugin template: https://github.com/obsidianmd/obsidian-sample-plugin
-// Omar Muhammad
+// Authors: Omar Muhammad
 
 import esbuild from 'esbuild'
 import process from 'process'
