@@ -1,19 +1,11 @@
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
+// Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 // Authors: Omar Muhammad
 
 import 'phaser'
 import {
-    CANVAS_WIDTH
+    CANVAS_HEIGHT
 } from '../constants'
-
-
-const MAX_WIDTH = 1454
-const SCROLL_PERCENT = 0.2
-const MIN_SCROLL = -(MAX_WIDTH - CANVAS_WIDTH)
-const SCROLL_DELTA = 3
-
-const LEFT_SCROLL_BORDER = CANVAS_WIDTH * SCROLL_PERCENT
-const RIGHT_SCROLL_BORDER = CANVAS_WIDTH - LEFT_SCROLL_BORDER
 
 
 export default class Game extends Phaser.Scene {
@@ -25,7 +17,7 @@ export default class Game extends Phaser.Scene {
 
     player: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     cursors: Phaser.Types.Input.Keyboard.CursorKeys
-    bg: Phaser.GameObjects.Image
+    background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
 
     constructor() {
@@ -33,16 +25,22 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
-        this.cursors = this.input.keyboard.createCursorKeys()
-
         // initialize background
-        this.bg = this.add.image(0, 0, 'bg')
-        this.bg.setOrigin(0, 0)
+        this.background = this.add.image(0, 0, 'bg')
+        this.background.setOrigin(0, 0)
+
+        this.cameras.main.setBounds(0, 0, this.background.width, CANVAS_HEIGHT)
+
+        // this can be used if necessary for larger areas
+        //this.cameras.main.setZoom(1)
+
+        this.physics.world.setBounds(0, 0, this.background.width, CANVAS_HEIGHT)
+        this.cursors = this.input.keyboard.createCursorKeys()
 
         // initialize platforms
         const platformDefs = [
             // ground platform
-            {x: 0, y: 575, w: CANVAS_WIDTH, h: 1}
+            {x: 0, y: 575, w: this.background.width, h: 1}
         ]
 
         this.platforms = this.physics.add.staticGroup()
@@ -59,9 +57,10 @@ export default class Game extends Phaser.Scene {
         // TODO: player should be extracted to its own file
         // not how lucy will actually look, but fine for a mockup
         this.player = this.physics.add.sprite(100, 450, 'dude')
-        this.player.setOrigin(0, 0)
         this.player.setBounce(0.2)
         this.player.setCollideWorldBounds(true)
+
+        this.cameras.main.startFollow(this.player, true, 0.08, 0.08)
     
         this.platforms.refresh()
         this.physics.add.collider(this.player, this.platforms)
@@ -131,26 +130,10 @@ export default class Game extends Phaser.Scene {
             this.playerFacing = -1
             this.player.setVelocityX(-160)
             this.player.anims.play('dude_left', true)
-    
-            // handling it with a scroll border right now, but it should ultimately be a "region"
-            // region implementation should help avoid player's choppiness while scrolling
-            if (this.player.x <= LEFT_SCROLL_BORDER && this.bg.x < 0) {
-                this.bg.x += SCROLL_DELTA
-                this.player.x += SCROLL_DELTA
-    
-                if (this.bg.x > 0) this.bg.x = 0
-            }
         } else if (this.cursors.right.isDown) {
             this.playerFacing = 1
             this.player.setVelocityX(160)
             this.player.anims.play('dude_right', true)
-    
-            if (this.player.x >= RIGHT_SCROLL_BORDER && this.bg.x > MIN_SCROLL) {
-                this.bg.x -= SCROLL_DELTA
-                this.player.x -= SCROLL_DELTA
-            }
-    
-            if (this.bg.x < MIN_SCROLL) this.bg.x = MIN_SCROLL
         } else {
             this.player.setVelocityX(0)
             this.player.anims.play('dude_turn')
