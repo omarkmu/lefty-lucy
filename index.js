@@ -1,12 +1,7 @@
-const express = require('express');
-const app = express();
+const express = require('express')
+const PORT = process.env.PORT ?? 8080
 
-app.use(express.static(__dirname + '/public'));
-
-app.get('/', function (_, res) {
-  res.sendFile(__dirname + '/index.html');
-});
-
-app.listen(8080, () => {
-  console.log('Listening on http://localhost:8080');
-});
+express()
+  .use(express.static(`${__dirname}/public`))
+  .get('/', (_, res) => res.sendFile(`${__dirname}/index.html`))
+  .listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`))
