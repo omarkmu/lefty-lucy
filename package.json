@@ -7,7 +7,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node esbuild.config.mjs && node .",
     "watch": "node esbuild.config.mjs watch",
-    "build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
     "start": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node ."
   },
   "author": "",
