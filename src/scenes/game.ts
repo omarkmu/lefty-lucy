@@ -21,9 +21,5 @@ export default class Game extends Scene {
             frameWidth: 32,
             frameHeight: 48
         })
-        this.load.spritesheet('antidude', 'assets/antidude.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        })
     }
 }
