@@ -2,33 +2,43 @@
 
 import type Scene from './scene'
 
+// the amount to add to the X position of each heart
+const HEART_OFFSET = -8
+
 export default class UI {
     heartSprites: Phaser.GameObjects.Image[] = []
 
     constructor(public scene: Scene) {}
 
     preload() {
-        // TODO: add heart image here
+        this.scene.load.image('heart', 'assets/heart.png')
     }
 
     create() {
-        this.renderLifeHearts()
+        // don't render hearts in the overworld
+        if (this.scene.isCombatLevel) {
+            this.renderLifeHearts()
+        }
     }
 
-    renderLifeHearts() {
+    removeLifeHearts() {
         // clear old life hearts, if present
         for (const sprite of this.heartSprites) {
             sprite.destroy()
         }
 
-        let x = 0
         this.heartSprites = []
+    }
+
+    renderLifeHearts() {
+        this.removeLifeHearts()
+
         for (let i = 0; i < this.scene.player.lives; i++) {
-            const sprite = this.scene.add.image(x, 0, 'fireball')
+            const sprite = this.scene.add.image(0, 0, 'heart')
+            sprite.setX(i * (sprite.width + HEART_OFFSET)) // update the x such that hearts display left to right
             sprite.setOrigin(0)
             sprite.setScrollFactor(0) // ensure the sprites are always on screen
 
-            x += sprite.width // updating the x such that they display left to right
             this.heartSprites.push(sprite)
         }
     }
