@@ -2,6 +2,7 @@
 
 import 'phaser'
 import Player from './player'
+import UI from './ui'
 
 
 /**
@@ -11,10 +12,19 @@ import Player from './player'
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     player: Player
+    ui: UI
 
     constructor(private _options: SceneOptions) {
         const opts = _options as any
         super(opts.config ?? opts.name)
+
+        this.player = new Player(this)
+        this.ui = new UI(this)
+    }
+
+    preload() {
+        this.player.preload()
+        this.ui.preload()
     }
 
     create() {
@@ -44,11 +54,14 @@ import Player from './player'
         }
 
         // initialize player
-        this.player = new Player(this)
+        this.player.create()
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
         this.physics.add.collider(this.player.sprite, this.platforms)
         this.platforms.refresh()
+
+        // initialize UI
+        this.ui.create()
     }
 
     update() {
