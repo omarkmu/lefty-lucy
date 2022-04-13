@@ -3,15 +3,15 @@
 
 import esbuild from 'esbuild'
 import process from 'process'
+import { runServer } from './index.js'
 
 const mode = process.argv[2]
 const prod = mode === 'production'
-const watch = mode === 'watch'
 
 esbuild.build({
     entryPoints: ['src/main.ts'],
     bundle: true,
-    watch: watch,
+    watch: !prod,
     minify: prod,
     treeShaking: true,
     sourcemap: prod ? false : 'inline',
@@ -19,4 +19,6 @@ esbuild.build({
     target: 'es2016',
     logLevel: 'info',
     outfile: 'public/main.js',
-}).catch(() => process.exit(1))
+})
+    .then(() => !prod && runServer())
+    .catch(() => process.exit(1))
