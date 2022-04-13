@@ -1,6 +1,5 @@
 // Authors: Omar Muhammad
 
-import type * as Phaser from 'phaser'
 import type Scene from './scene'
 
 const X_VELOCITY = 160
