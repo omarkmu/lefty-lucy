@@ -15,11 +15,7 @@ export default class Game extends Scene {
     }
 
     preload() {
+        super.preload()
         this.load.image('bg', 'assets/scrolltest.png')
-        this.load.image('fireball', 'assets/fireball.png')
-        this.load.spritesheet('dude', 'assets/dude.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        })
     }
 }

@@ -2,6 +2,7 @@
 
 import 'phaser'
 import Player from './player'
+import UI from './ui'
 
 
 /**
@@ -11,10 +12,23 @@ import Player from './player'
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     player: Player
+    ui: UI
 
     constructor(private _options: SceneOptions) {
         const opts = _options as any
         super(opts.config ?? opts.name)
+
+        this.player = new Player(this)
+        this.ui = new UI(this)
+    }
+
+    get isCombatLevel() {
+        return this._options.isCombatLevel ?? false
+    }
+
+    preload() {
+        this.player.preload()
+        this.ui.preload()
     }
 
     create() {
@@ -44,11 +58,14 @@ import Player from './player'
         }
 
         // initialize player
-        this.player = new Player(this)
+        this.player.create()
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
         this.physics.add.collider(this.player.sprite, this.platforms)
         this.platforms.refresh()
+
+        // initialize UI
+        this.ui.create()
     }
 
     update() {
@@ -57,28 +74,19 @@ import Player from './player'
 }
 
 
-type HasConfig = {
-    /**
-     * The scene settings configuration.
-     * We probably won't need this, just including it in case we do.
-     */
-    config: Phaser.Types.Scenes.SettingsConfig
-}
-type HasName = {
-    /**
-     * The unique name of the scene.
-     */
-    name: string
-}
 
-type SceneOptions = (HasName | HasConfig) & {
+interface SceneOptions {
     /**
      * The key (provided to load.image) of the background image for this scene.
      */
-    background: string,
-    /**
-     * Defines whether this is a combat or story level.
-     * Unused for now.
+     background: string,
+     /**
+      * Defines whether this is a combat or story level.
+      * Unused for now.
+      */
+     isCombatLevel?: boolean,
+     /**
+     * The unique name of the scene.
      */
-    isCombatLevel?: boolean
+    name: string
 }
