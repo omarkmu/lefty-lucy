@@ -1,6 +1,5 @@
 // Authors: Omar Muhammad
 
-import 'phaser'
 import Player from './player'
 import UI from './ui'
 
@@ -52,7 +51,7 @@ import UI from './ui'
             const sprite = this.platforms.create(info.x, info.y, undefined, undefined, false)
             sprite.displayWidth = 1
             sprite.setOrigin(0, 0)
-    
+
             sprite.enableBody()
             sprite.setSize(info.w, info.h, 0)
         }
@@ -79,13 +78,13 @@ interface SceneOptions {
     /**
      * The key (provided to load.image) of the background image for this scene.
      */
-     background: string,
-     /**
-      * Defines whether this is a combat or story level.
-      * Unused for now.
-      */
-     isCombatLevel?: boolean,
-     /**
+    background: string,
+    /**
+     * Defines whether this is a combat or story level.
+     * Unused for now.
+     */
+    isCombatLevel?: boolean,
+    /**
      * The unique name of the scene.
      */
     name: string

@@ -3,8 +3,15 @@
 import type Scene from './scene'
 import type { Keys } from '../constants'
 
+const keyJustDown = Phaser.Input.Keyboard.JustDown
+
 const X_VELOCITY = 160
-const Y_VELOCITY = 300
+const Y_VELOCITY = 200
+const FIREBALL_VELOCITY = 200
+const MELEE_COOLDOWN = 100
+const FIREBALL_COOLDOWN = 600
+const FIREBALL_DESTROY_DELAY = 5000
+const ATTACK_COOLDOWNS = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
 
 const enum Direction {
     Left = -1,
@@ -16,22 +23,24 @@ const enum Direction {
  * This is not just the player sprite; see the sprite property.
  */
 export default class Player {
-    // defaulting to right because stages are left to right
-    lastDirection: Direction = Direction.Right
-    // remaining lives
-    _lives: number = 3
+    _lives: number = 3 // remaining lives
+    lastDirection: Direction = Direction.Right // default to right because stages are left to right
     isFiring: boolean = false
 
-    scene: Scene
+    // 0 = melee, 1 = fireball
+    attackCooldownState = [false, false]
+    attackTrigger = [false, false]
+
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     keys: Keys
 
-    constructor(scene: Scene) {
-        this.scene = scene
-    }
+    constructor(public scene: Scene) { }
 
     get x() { return this.sprite.x }
     get y() { return this.sprite.y }
+
+    get isMeleeOnCooldown() { return this.attackCooldownState[0] }
+    get isFireballOnCooldown() { return this.attackCooldownState[1] }
 
     get lives() { return this._lives }
     set lives(value) {
@@ -61,12 +70,16 @@ export default class Player {
      * Initializes the player sprite and animations.
      */
     create() {
-        this.sprite = this.scene.physics.add.sprite(100, 450, 'dude')
-            .setBounce(0.2)
-            .setCollideWorldBounds(true)
-        this.keys = Object.assign(this.scene.input.keyboard.createCursorKeys(), {
+        this.sprite = this.scene.physics.add.sprite(100, 450, 'dude').setCollideWorldBounds(true)
+        this.keys = {
+            up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
+            down: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+            left: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+            right: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            space: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
+            interact: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
             enter: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
-        })
+        }
 
         // initialize animations
         const prefix = 'dude'
@@ -88,26 +101,28 @@ export default class Player {
             repeat: -1
         })
 
-        // add firing event
-        // TODO: this should be changed to a cooldown system
-        this.scene.time.addEvent({
-            loop: true,
-            delay: 1000,
-            callback:  () => {
-                if (!this.isFiring) return
+        // disable attacking in non-combat levels
+        if (!this.scene.isCombatLevel) return
 
-                const fireball = this.scene.physics.add.sprite(this.sprite.x, this.sprite.y, 'fireball')
-                fireball.setOrigin(0, 0)
-                fireball.setVelocityX(this.lastDirection * 200)
-                fireball.setImmovable(false)
+        this.scene.input.mouse.disableContextMenu()
+        this.scene.input.on('pointerdown', (mouse: any) => {
+            if (mouse.button !== 0 && mouse.button !== 2) return
 
-                fireball.body.setAllowGravity(false)
+            // convert 0 to 0, 2 to 1
+            const button = Math.floor(mouse.button / 2)
 
-                this.scene.time.addEvent({
-                    delay: 5000,
-                    callback: () => fireball.destroy()
-                })
-            }
+            // if the attack is on cooldown, ignore
+            if (this.attackCooldownState[button]) return
+
+            // set the attack to be triggered on the next update
+            this.attackTrigger[button] = true
+
+            // set the attack cooldown
+            this.attackCooldownState[button] = true
+            this.scene.time.addEvent({
+                delay: ATTACK_COOLDOWNS[button],
+                callback: () => this.attackCooldownState[button] = false
+            })
         })
     }
 
@@ -119,28 +134,44 @@ export default class Player {
         if (this.scene.ui.handleInput(this.keys)) return
 
         if (this.keys.left.isDown) {
-            // move left
             this.lastDirection = Direction.Left
             this.sprite.setVelocityX(-X_VELOCITY)
             this.sprite.anims.play('dude_left', true)
         } else if (this.keys.right.isDown) {
-            // move right
             this.lastDirection = Direction.Right
             this.sprite.setVelocityX(X_VELOCITY)
             this.sprite.anims.play('dude_right', true)
         } else {
-            // stop moving
             this.sprite.setVelocityX(0)
             this.sprite.anims.play('dude_turn')
         }
 
-        if (this.keys.up.isDown && this.sprite.body.touching.down) {
-            // jump
+        const jumpRequested = keyJustDown(this.keys.up) || keyJustDown(this.keys.space)
+        if (jumpRequested && this.sprite.body.touching.down) {
             this.sprite.setVelocityY(-Y_VELOCITY)
         }
 
-        // fire
-        // TODO: improve controls for this when combat is implemented
-        this.isFiring = this.keys.space.isDown
+        // TODO: melee
+        if (this.attackTrigger[0]) {
+            this.attackTrigger[0] = false
+        }
+
+        // fireball
+        if (this.attackTrigger[1]) {
+            this.attackTrigger[1] = false
+
+            const xOffset = this.lastDirection === -1 ? -40 : 20
+            const fireball = this.scene.physics.add.sprite(this.sprite.x + xOffset, this.sprite.y, 'fireball')
+                .setOrigin(0)
+                .setVelocityX(this.lastDirection * FIREBALL_VELOCITY)
+                .setImmovable(false)
+
+            fireball.body.setAllowGravity(false)
+
+            this.scene.time.addEvent({
+                delay: FIREBALL_DESTROY_DELAY,
+                callback: () => fireball.destroy()
+            })
+        }
     }
 }
