@@ -1,14 +1,19 @@
 // Authors: Omar Muhammad
 
 import type Scene from './scene'
+import type { Keys } from '../constants'
+import DialogueManager from './dialogue'
 
 // the amount to add to the X position of each heart
 const HEART_OFFSET = -8
 
 export default class UI {
     heartSprites: Phaser.GameObjects.Image[] = []
+    dialogue: DialogueManager
 
-    constructor(public scene: Scene) {}
+    constructor(public scene: Scene) {
+        this.dialogue = new DialogueManager(this)
+    }
 
     preload() {
         this.scene.load.image('heart', 'assets/heart.png')
@@ -19,6 +24,21 @@ export default class UI {
         if (this.scene.isCombatLevel) {
             this.renderLifeHearts()
         }
+
+        this.dialogue.create()
+    }
+
+    handleInput(keys: Keys): boolean {
+        if (this.dialogue.visible) {
+            if (Phaser.Input.Keyboard.JustDown(keys.enter)) {
+                this.dialogue.skipOrMoveNext()
+            }
+
+            // capture input if the dialogue box is visible
+            return true
+        }
+
+        return false
     }
 
     removeLifeHearts() {
