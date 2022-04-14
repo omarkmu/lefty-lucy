@@ -26,14 +26,6 @@ export default class UI {
         }
 
         this.dialogue.create()
-
-        // TODO: remove this. for testing purposes
-        this.dialogue.show([
-            'This is a test dialogue.',
-            'It has multiple lines.',
-            ['It also has a line ', 'which is split into ', 'multiple parts.'],
-            'Neat.'
-        ])
     }
 
     handleInput(keys: Keys): boolean {
