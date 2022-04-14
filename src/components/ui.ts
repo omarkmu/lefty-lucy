@@ -1,5 +1,6 @@
 // Authors: Omar Muhammad
 
+import DialogueBox from './dialogueBox'
 import type Scene from './scene'
 
 // the amount to add to the X position of each heart
@@ -7,8 +8,11 @@ const HEART_OFFSET = -8
 
 export default class UI {
     heartSprites: Phaser.GameObjects.Image[] = []
+    dialogueBox: DialogueBox
 
-    constructor(public scene: Scene) {}
+    constructor(public scene: Scene) {
+        this.dialogueBox = new DialogueBox(this)
+    }
 
     preload() {
         this.scene.load.image('heart', 'assets/heart.png')
@@ -19,6 +23,12 @@ export default class UI {
         if (this.scene.isCombatLevel) {
             this.renderLifeHearts()
         }
+
+        this.dialogueBox.create()
+
+        // TODO: remove this. for testing purposes
+        this.dialogueBox.setText('test')
+        this.dialogueBox.show()
     }
 
     removeLifeHearts() {
