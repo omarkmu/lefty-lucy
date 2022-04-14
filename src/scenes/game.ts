@@ -1,5 +1,3 @@
-// Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
-// Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 // Authors: Omar Muhammad
 
 import Scene from '../components/scene'

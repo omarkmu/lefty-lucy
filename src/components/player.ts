@@ -1,4 +1,5 @@
 // Authors: Omar Muhammad
+// Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 
 import type Scene from './scene'
 import type { Keys } from '../constants'

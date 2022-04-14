@@ -1,4 +1,5 @@
 // Authors: Omar Muhammad
+// Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
 import Player from './player'
 import UI from './ui'
