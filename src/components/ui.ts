@@ -1,17 +1,18 @@
 // Authors: Omar Muhammad
 
-import DialogueBox from './dialogueBox'
 import type Scene from './scene'
+import type { Keys } from '../constants'
+import DialogueManager from './dialogue'
 
 // the amount to add to the X position of each heart
 const HEART_OFFSET = -8
 
 export default class UI {
     heartSprites: Phaser.GameObjects.Image[] = []
-    dialogueBox: DialogueBox
+    dialogue: DialogueManager
 
     constructor(public scene: Scene) {
-        this.dialogueBox = new DialogueBox(this)
+        this.dialogue = new DialogueManager(this)
     }
 
     preload() {
@@ -24,11 +25,28 @@ export default class UI {
             this.renderLifeHearts()
         }
 
-        this.dialogueBox.create()
+        this.dialogue.create()
 
         // TODO: remove this. for testing purposes
-        this.dialogueBox.setText('test')
-        this.dialogueBox.show()
+        this.dialogue.show([
+            'This is a test dialogue.',
+            'It has multiple lines.',
+            ['It also has a line ', 'which is split into ', 'multiple parts.'],
+            'Neat.'
+        ])
+    }
+
+    handleInput(keys: Keys): boolean {
+        if (this.dialogue.visible) {
+            if (Phaser.Input.Keyboard.JustDown(keys.enter)) {
+                this.dialogue.skipOrMoveNext()
+            }
+
+            // capture input if the dialogue box is visible
+            return true
+        }
+
+        return false
     }
 
     removeLifeHearts() {

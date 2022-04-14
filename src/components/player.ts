@@ -1,6 +1,7 @@
 // Authors: Omar Muhammad
 
 import type Scene from './scene'
+import type { Keys } from '../constants'
 
 const X_VELOCITY = 160
 const Y_VELOCITY = 300
@@ -23,7 +24,7 @@ export default class Player {
 
     scene: Scene
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-    cursors: Phaser.Types.Input.Keyboard.CursorKeys
+    keys: Keys
 
     constructor(scene: Scene) {
         this.scene = scene
@@ -60,12 +61,12 @@ export default class Player {
      * Initializes the player sprite and animations.
      */
     create() {
-        const sprite = this.scene.physics.add.sprite(100, 450, 'dude')
-        sprite.setBounce(0.2)
-        sprite.setCollideWorldBounds(true)
-
-        this.cursors = this.scene.input.keyboard.createCursorKeys()
-        this.sprite = sprite
+        this.sprite = this.scene.physics.add.sprite(100, 450, 'dude')
+            .setBounce(0.2)
+            .setCollideWorldBounds(true)
+        this.keys = Object.assign(this.scene.input.keyboard.createCursorKeys(), {
+            enter: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+        })
 
         // initialize animations
         const prefix = 'dude'
@@ -114,12 +115,15 @@ export default class Player {
      * Updates the position of the player based on the current inputs.
      */
     update() {
-        if (this.cursors.left.isDown) {
+        // allow UI to capture input
+        if (this.scene.ui.handleInput(this.keys)) return
+
+        if (this.keys.left.isDown) {
             // move left
             this.lastDirection = Direction.Left
             this.sprite.setVelocityX(-X_VELOCITY)
             this.sprite.anims.play('dude_left', true)
-        } else if (this.cursors.right.isDown) {
+        } else if (this.keys.right.isDown) {
             // move right
             this.lastDirection = Direction.Right
             this.sprite.setVelocityX(X_VELOCITY)
@@ -130,13 +134,13 @@ export default class Player {
             this.sprite.anims.play('dude_turn')
         }
 
-        if (this.cursors.up.isDown && this.sprite.body.touching.down) {
+        if (this.keys.up.isDown && this.sprite.body.touching.down) {
             // jump
             this.sprite.setVelocityY(-Y_VELOCITY)
         }
 
         // fire
         // TODO: improve controls for this when combat is implemented
-        this.isFiring = this.cursors.space.isDown
+        this.isFiring = this.keys.space.isDown
     }
 }

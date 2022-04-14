@@ -19,16 +19,17 @@ const PADDING = 16
 
 export default class DialogueBox {
     graphics: Phaser.GameObjects.Graphics
-    targetText: string
     text: Phaser.GameObjects.Text
-    visible: boolean
     animateEvent: Phaser.Time.TimerEvent
+    animating = false
+    visible = false
     animateProgress = 0
+    initialProgress = 0
+    targetText = ''
 
     constructor(public ui: UI) {}
 
     create() {
-        this.visible = false
         this.graphics = this.ui.scene.add.graphics()
             .setVisible(false)
             .setScrollFactor(0)
@@ -36,7 +37,18 @@ export default class DialogueBox {
 
     setText(text: string) {
         this.targetText = text
-        this.draw()
+    }
+
+    setInitialProgress(progress: number) {
+        this.initialProgress = progress
+    }
+
+    skipAnimation() {
+        if (!this.animating) return
+
+        this.animateEvent?.remove()
+        this.text.setText(this.targetText)
+        this.animating = false
     }
 
     draw() {
@@ -57,7 +69,7 @@ export default class DialogueBox {
         const text = this.ui.scene.make.text({
             x: X + PADDING,
             y: Y + PADDING,
-            text: '',
+            text: this.targetText.slice(0, this.initialProgress),
             visible: this.visible,
             scrollFactor: 0,
             style: {
@@ -68,17 +80,18 @@ export default class DialogueBox {
         })
 
         this.text = text
-        this.animateProgress = 0
+        this.animateProgress = this.initialProgress
+        this.animating = true
         this.animateEvent = this.ui.scene.time.addEvent({
             delay: DELAY,
             loop: true,
             callback: () => {
-                if (this.text !== text) return
                 this.animateProgress++
                 this.text.setText(this.targetText.slice(0, this.animateProgress))
 
                 if (this.animateProgress === this.targetText.length) {
-                    this.animateEvent.remove()
+                    this.animateEvent?.remove()
+                    this.animating = false
                 }
             }
         })
@@ -87,24 +100,12 @@ export default class DialogueBox {
     show() {
         this.visible = true
         this.graphics.setVisible(true)
-        this.text.setVisible(true)
-        this.draw()
+        this.text?.setVisible(true)
     }
 
     hide() {
         this.visible = false
         this.graphics.setVisible(false)
-        this.text.setVisible(false)
+        this.text?.setVisible(false)
     }
-}
-
-
-interface DialogueBoxOptions {
-    color?: number
-    alpha?: number
-    height?: number
-    borderColor?: number
-    borderAlpha?: number
-    borderThickness?: number
-    padding?: number
 }
