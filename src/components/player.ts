@@ -34,7 +34,7 @@ export default class Player {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     keys: Keys
 
-    constructor(public scene: Scene) { }
+    constructor(public scene: Scene, public spawn: SpawnLocation) { }
 
     get x() { return this.sprite.x }
     get y() { return this.sprite.y }
@@ -70,7 +70,10 @@ export default class Player {
      * Initializes the player sprite and animations.
      */
     create() {
-        this.sprite = this.scene.physics.add.sprite(100, 450, 'dude').setCollideWorldBounds(true)
+        this.sprite = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'dude')
+            .setCollideWorldBounds(true)
+            .setOrigin(0)
+
         this.keys = {
             up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             down: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
@@ -174,4 +177,9 @@ export default class Player {
             })
         }
     }
+}
+
+interface SpawnLocation {
+    x: number
+    y: number
 }

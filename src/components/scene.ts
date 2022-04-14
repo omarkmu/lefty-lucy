@@ -17,7 +17,11 @@ import UI from './ui'
         const opts = _options as any
         super(opts.config ?? opts.name)
 
-        this.player = new Player(this)
+        this.player = new Player(this, {
+            x: this._options.playerSpawn[0],
+            y: this._options.playerSpawn[1]
+        })
+
         this.ui = new UI(this)
     }
 
@@ -78,14 +82,17 @@ interface SceneOptions {
     /**
      * The key (provided to load.image) of the background image for this scene.
      */
-    background: string,
+    background: string
     /**
      * Defines whether this is a combat or story level.
-     * Unused for now.
      */
-    isCombatLevel?: boolean,
+    isCombatLevel?: boolean
     /**
      * The unique name of the scene.
      */
     name: string
+    /**
+     * The spawn location of the player. Specified as [X, Y].
+     */
+    playerSpawn: [number, number]
 }

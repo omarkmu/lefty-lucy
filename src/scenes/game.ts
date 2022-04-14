@@ -10,7 +10,8 @@ export default class Game extends Scene {
         super({
             name: 'game',
             background: 'bg',
-            isCombatLevel: true
+            isCombatLevel: true,
+            playerSpawn: [100, 525]
         })
     }
 
