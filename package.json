@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node esbuild.config.mjs",
-    "start": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && node . run"
+    "dev": "node esbuild.config.js",
+    "start": "tsc -noEmit -skipLibCheck && node esbuild.config.js production && node . run"
   },
   "author": "",
   "license": "ISC",
