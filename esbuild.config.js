@@ -1,9 +1,9 @@
 // adapted from Obsidian plugin template: https://github.com/obsidianmd/obsidian-sample-plugin
 // Authors: Omar Muhammad
 
-import esbuild from 'esbuild'
-import process from 'process'
-import { runServer } from './index.js'
+const esbuild = require('esbuild')
+const process = require('process')
+const { runServer } = require('./index.js')
 
 const mode = process.argv[2]
 const prod = mode === 'production'
