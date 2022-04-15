@@ -16,6 +16,13 @@ const RAND_PAUSE_MAX = 3000
 
 const FORGET_TIME = 1000
 
+const enum AIMode {
+    None,
+    Stationary,
+    Patrol,
+    Pursue,
+}
+
 export default class Enemy {
     static preload(scene: Scene) {
         // TODO: change this to an enemy sprite (or multiple, depending on enemy type)
@@ -38,13 +45,13 @@ export default class Enemy {
     attackDelay: number
     attackRange: number
 
+    defaultMode: AIMode
+    currentMode: AIMode
+
     playerDistance: number
-    isTargetingPlayer: boolean = false
     lastAttack: number = 0
     lastSeenPlayer: number = 0
 
-    isPatrolEnabled: boolean
-    isPatrolPaused: boolean = false
     canRandomPause: boolean = false
     canPauseEvent: Phaser.Time.TimerEvent
     savedVelocity: number
@@ -66,7 +73,9 @@ export default class Enemy {
         this.attackDelay = def.attackDelay ?? 1000
         this.minX = def.patrolRange?.[0]
         this.maxX = def.patrolRange?.[1]
-        this.isPatrolEnabled = def.disablePatrol !== true
+
+        const isPatrolEnabled = def.disablePatrol !== true
+        this.currentMode = this.defaultMode = isPatrolEnabled ? AIMode.Patrol : AIMode.Stationary
 
         this.initialDirection = Phaser.Math.Between(1, 2) === 1
             ? Direction.Left
@@ -90,9 +99,7 @@ export default class Enemy {
         this.playerDistance = Phaser.Math.Distance.BetweenPoints(this.sprite, this.scene.player.sprite)
 
         this.tryCombat()
-        if (this.isPatrolEnabled && !this.isTargetingPlayer) {
-            this.patrol()
-        }
+        this.tryPatrol()
 
         if (this.sprite.body.velocity.x > 0) {
             this.sprite.anims.play('dude_right', true)
@@ -104,7 +111,7 @@ export default class Enemy {
     }
 
     alert() {
-        this.isTargetingPlayer = true
+        this.currentMode = AIMode.Pursue
     }
 
     tryCombat() {
@@ -119,26 +126,27 @@ export default class Enemy {
         const now = this.scene.time.now
         if (!isPlayerWithinRange) {
             if (now - this.lastSeenPlayer >= FORGET_TIME) {
-                this.isTargetingPlayer = false
+                this.currentMode = this.defaultMode
             }
 
-            if (!this.isTargetingPlayer) {
+            if (this.currentMode !== AIMode.Pursue) {
                 return
             }
         }
 
-        this.isTargetingPlayer = true
         this.lastSeenPlayer = now
+        this.currentMode = AIMode.Pursue
 
         const isWithinAttackRange = dist < this.attackRange
         if (!isWithinAttackRange) {
             const minX = this.minX ?? this.currentPlatform?.body.x ?? 0
             const maxX = this.maxX ?? this.currentPlatform?.body.width ?? this.scene.background.width
+            const isWithinX = Phaser.Math.Distance.Between(x, 0, this.scene.player.x, 0) < this.sprite.width / 2
 
             // follow player
-            if (x < this.scene.player.x && x < maxX) {
+            if (!isWithinX && x < maxX && x < this.scene.player.x) {
                 this.sprite.setVelocityX(VELOCITY)
-            } else if (x > this.scene.player.x && x > minX) {
+            } else if (!isWithinX && x > this.scene.player.x && x > minX) {
                 this.sprite.setVelocityX(-VELOCITY)
             } else {
                 this.sprite.setVelocityX(0)
@@ -155,8 +163,8 @@ export default class Enemy {
         }
     }
 
-    patrol() {
-        if (this.isPatrolPaused) return
+    tryPatrol() {
+        if (this.currentMode !== AIMode.Patrol) return
 
         // pause the enemy's movement randomly
         if (this.canRandomPause) {
@@ -189,7 +197,7 @@ export default class Enemy {
     pauseMovement(random = false) {
         const oldVelocity = this.sprite.body.velocity.x
         this.sprite.setVelocityX(0)
-        this.isPatrolPaused = true
+        this.currentMode = AIMode.Stationary
 
         const pauseMin = random ? RAND_PAUSE_MIN : TURN_PAUSE_MIN
         const pauseMax = random ? RAND_PAUSE_MAX : TURN_PAUSE_MAX
@@ -198,9 +206,9 @@ export default class Enemy {
         this.scene.time.addEvent({
             delay: Phaser.Math.Between(pauseMin, pauseMax),
             callback: () => {
-                if (!this.sprite) return
+                if (!this.sprite || this.currentMode !== AIMode.Stationary) return
                 this.sprite.setVelocityX(oldVelocity)
-                this.isPatrolPaused = false
+                this.currentMode = this.defaultMode
             }
         })
 
