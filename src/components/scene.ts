@@ -11,6 +11,10 @@ import UI from './ui'
  * Base class for game scenes.
  */
  export default class Scene extends Phaser.Scene {
+    static generateEnemies(spawnLocations: [number, number][], enemyDef?: Omit<EnemyDefinition, 'spawn'>): EnemyDefinition[] {
+        return spawnLocations.map(spawn => Object.assign({ spawn }, enemyDef ?? {}))
+    }
+
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group

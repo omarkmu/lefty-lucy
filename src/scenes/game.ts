@@ -10,14 +10,10 @@ export default class Game extends Scene {
             background: 'bg',
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            enemies: [
-                {
-                    spawn: [500, 400]
-                },
-                {
-                    spawn: [1000, 525]
-                }
-            ]
+            enemies: Scene.generateEnemies([
+                [500, 400],
+                [1000, 525]
+            ])
         })
     }
 
