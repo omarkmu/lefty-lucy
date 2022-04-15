@@ -27,8 +27,12 @@ import UI from './ui'
         super((_options as any).config ?? _options.name)
 
         this.player = new Player(this, {
-            x: this._options.playerSpawn[0],
-            y: this._options.playerSpawn[1]
+            spawn: {
+                x: this._options.playerSpawn[0],
+                y: this._options.playerSpawn[1],
+            },
+            isFireballEnabled: _options.playerFireballEnabled ?? false,
+            isSwordEnabled: _options.playerSwordEnabled ?? false,
         })
 
         this.enemies = (_options.enemies ?? []).map(def => new Enemy(this, def))
@@ -131,6 +135,16 @@ interface SceneOptions {
      * The spawn location of the player. Specified as [X, Y].
      */
     playerSpawn: [number, number]
+    /**
+     * Whether the fireball attack is enabled in this level.
+     * Default: false.
+     */
+    playerFireballEnabled?: boolean
+    /**
+     * Whether the punch attack in this level should be replaced with a sword attack.
+     * Default: false.
+     */
+    playerSwordEnabled?: boolean
     /**
      * Information about enemies which should be spawned.
      */

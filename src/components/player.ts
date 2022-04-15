@@ -6,15 +6,22 @@ import { Direction, Keys, SpawnLocation } from '../constants'
 
 const keyJustDown = Phaser.Input.Keyboard.JustDown
 
-const INVINCIBILITY_DELAY = 650
+const INVINCIBILITY_DELAY = 100
 const X_VELOCITY = 160
 const Y_VELOCITY = 200
-const FIREBALL_VELOCITY = 200
+
 const MELEE_COOLDOWN = 100
-const MELEE_RANGE = 10
+const MELEE_RANGE = 50
+const MELEE_DAMAGE = 2
+
+const SWORD_COOLDOWN = 200
+const SWORD_RANGE = 100
+const SWORD_DAMAGE = 6
+
 const FIREBALL_COOLDOWN = 600
-const FIREBALL_DESTROY_DELAY = 5000
-const ATTACK_COOLDOWNS = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
+const FIREBALL_VELOCITY = 200
+const FIREBALL_DESTROY_DELAY = 2000
+const FIREBALL_DAMAGE = 5
 
 /**
  * Keeps track of player information and manages input.
@@ -22,20 +29,34 @@ const ATTACK_COOLDOWNS = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
  */
 export default class Player {
     _lives: number = 3 // remaining lives
-    lastDirection: Direction = Direction.Right // default to right because stages are left to right
     isInvincible: boolean = false
 
     // 0 = melee, 1 = fireball
+    attackCooldowns = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
     attackCooldownState = [false, false]
     attackTrigger = [false, false]
+    attackX = [0, 0]
+    attackY = [0, 0]
 
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     keys: Keys
 
-    constructor(public scene: Scene, public spawn: SpawnLocation) { }
+    spawn: SpawnLocation
+    isFireballEnabled: boolean
+    isSwordEnabled: boolean
 
-    get x() { return this.sprite.x }
-    get y() { return this.sprite.y }
+    constructor(public scene: Scene, options: PlayerOptions) {
+        this.spawn = options.spawn
+        this.isFireballEnabled = options.isFireballEnabled
+        this.isSwordEnabled = options.isSwordEnabled
+
+        if (this.isSwordEnabled) {
+            this.attackCooldowns[0] = SWORD_COOLDOWN
+        }
+    }
+
+    get x() { return this.sprite.body.x }
+    get y() { return this.sprite.body.y }
 
     get isMeleeOnCooldown() { return this.attackCooldownState[0] }
     get isFireballOnCooldown() { return this.attackCooldownState[1] }
@@ -78,7 +99,7 @@ export default class Player {
     create() {
         const sprite: any = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'dude')
             .setCollideWorldBounds(true)
-        
+
         sprite.owner = this
         this.sprite = sprite
 
@@ -127,11 +148,13 @@ export default class Player {
 
             // set the attack to be triggered on the next update
             this.attackTrigger[button] = true
+            this.attackX[button] = mouse.position.x
+            this.attackY[button] = mouse.position.y
 
             // set the attack cooldown
             this.attackCooldownState[button] = true
             this.scene.time.addEvent({
-                delay: ATTACK_COOLDOWNS[button],
+                delay: this.attackCooldowns[button],
                 callback: () => this.attackCooldownState[button] = false
             })
         })
@@ -144,47 +167,89 @@ export default class Player {
         // allow UI to capture input
         if (this.scene.ui.handleInput(this.keys)) return
 
-        if (this.keys.left.isDown) {
-            this.lastDirection = Direction.Left
-            this.sprite.setVelocityX(-X_VELOCITY)
-            this.sprite.anims.play('dude_left', true)
-        } else if (this.keys.right.isDown) {
-            this.lastDirection = Direction.Right
-            this.sprite.setVelocityX(X_VELOCITY)
-            this.sprite.anims.play('dude_right', true)
-        } else {
-            this.sprite.setVelocityX(0)
-            this.sprite.anims.play('dude_turn')
-        }
+        const velMultiplier = this.keys.left.isDown ? -1 : (this.keys.right.isDown ? 1 : 0)
+        this.sprite.setVelocityX(X_VELOCITY * velMultiplier)
 
         const jumpRequested = keyJustDown(this.keys.up) || keyJustDown(this.keys.space)
         if (jumpRequested && this.sprite.body.touching.down) {
             this.sprite.setVelocityY(-Y_VELOCITY)
         }
 
-        // TODO: melee
+        if (velMultiplier < 0) {
+            this.sprite.anims.play('dude_left', true)
+        } else if (velMultiplier > 0) {
+            this.sprite.anims.play('dude_right', true)
+        } else {
+            this.sprite.anims.play('dude_turn')
+        }
+
+        // TODO: animation & sound effects
+
+        // melee
         if (this.attackTrigger[0]) {
             this.attackTrigger[0] = false
+            this.tryPunch()
         }
 
         // fireball
-        if (this.attackTrigger[1]) {
+        if (this.attackTrigger[1] && this.isFireballEnabled) {
             this.attackTrigger[1] = false
-
-            const xOffset = this.lastDirection === -1 ? -40 : 20
-            const fireball = this.scene.playerProjectiles.create(this.sprite.x + xOffset, this.sprite.y, 'fireball')
-                .setOrigin(0)
-                .setVelocityX(this.lastDirection * FIREBALL_VELOCITY)
-                .setImmovable(false)
-
-            fireball.body.setAllowGravity(false)
-            fireball.damage = 1
-
-            this.scene.time.addEvent({
-                delay: FIREBALL_DESTROY_DELAY,
-                callback: () => fireball.destroy()
-            })
+            this.createFireball()
         }
+    }
+
+    determineAttackDirection(attack: 0 | 1) {
+        if (this.sprite.body.velocity.x < 0) {
+            return Direction.Left
+        } else if (this.sprite.body.velocity.x > 0) {
+            return Direction.Right
+        }
+
+        // if the avatar isn't moving, determine attack direction based on click location relative to avatar
+        // source: https://stevenklambert.com/writing/phaser-3-game-object-position-relative-camera
+        const playerX = (this.sprite.x - this.scene.cameras.main.worldView.x) * this.scene.cameras.main.zoom
+        return (playerX > this.attackX[attack]) ? Direction.Left : Direction.Right
+    }
+
+    tryPunch() {
+        const direction = this.determineAttackDirection(0)
+        const validTargets = []
+        for (const enemy of this.scene.enemies) {
+            const isInvalidTarget = enemy.isDead
+                || (enemy.playerDistance === undefined)
+                || (enemy.playerDistance > (this.isSwordEnabled ? SWORD_RANGE : MELEE_RANGE))
+                || (direction === Direction.Left && enemy.x > this.x)
+                || (direction === Direction.Right && enemy.x < this.x)
+
+            if (!isInvalidTarget) {
+                validTargets.push(enemy)
+            }
+        }
+
+        validTargets.sort((a, b) => b.playerDistance - a.playerDistance)
+
+        const target = validTargets.pop()
+        if (!target) return
+
+        target.applyDamage(this.isSwordEnabled ? SWORD_DAMAGE : MELEE_DAMAGE)
+        target.alert()
+    }
+
+    createFireball() {
+        const direction = this.determineAttackDirection(1)
+        const xOffset = direction === Direction.Left ? -40 : 20
+        const fireball = this.scene.playerProjectiles.create(this.sprite.x + xOffset, this.sprite.y, 'fireball')
+            .setOrigin(0)
+            .setVelocityX(direction * FIREBALL_VELOCITY)
+            .setImmovable(false)
+
+        fireball.body.setAllowGravity(false)
+        fireball.damage = FIREBALL_DAMAGE
+
+        this.scene.time.addEvent({
+            delay: FIREBALL_DESTROY_DELAY,
+            callback: () => fireball.destroy()
+        })
     }
 
     applyDamage(lives: number) {
@@ -200,4 +265,10 @@ export default class Player {
             callback: () => this.isInvincible = false
         })
     }
+}
+
+interface PlayerOptions {
+    spawn: SpawnLocation
+    isFireballEnabled: boolean
+    isSwordEnabled: boolean
 }

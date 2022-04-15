@@ -37,6 +37,7 @@ export default class Enemy {
     attackDamage: number
     attackDelay: number
     attackRange: number
+
     playerDistance: number
     isTargetingPlayer: boolean = false
     lastAttack: number = 0
@@ -57,7 +58,7 @@ export default class Enemy {
             y: def.spawn[1]
         }
 
-        this.health = def.health ?? 1
+        this.health = def.health ?? 6
         this.hearingRange = def.hearingRange ?? 115
         this.visionRange = def.visionRange ?? 350
         this.attackRange = def.attackRange ?? 40
@@ -72,6 +73,8 @@ export default class Enemy {
             : Direction.Right
     }
 
+    get x() { return this.sprite.body.x }
+    get y() { return this.sprite.body.y }
     get isDead() { return this.health <= 0 }
 
     create() {
@@ -100,10 +103,14 @@ export default class Enemy {
         }
     }
 
+    alert() {
+        this.isTargetingPlayer = true
+    }
+
     tryCombat() {
         const dist = this.playerDistance
         const velX = this.sprite.body.velocity.x
-        const x = this.sprite.x
+        const x = this.x
 
         const isPlayerBehind = (velX > 0 && this.scene.player.x < x) || (velX < 0 && this.scene.player.x > x)
         const isWithinY = Phaser.Math.Distance.Between(0, this.sprite.y, 0, this.scene.player.y) <= this.sprite.height / 2
@@ -140,7 +147,8 @@ export default class Enemy {
             return
         }
 
-        if (isWithinAttackRange && now - this.lastAttack >= this.attackDelay) {
+        // TODO: animate, sound effect, and delay to give the player time to dodge
+        if (now - this.lastAttack >= this.attackDelay) {
             this.lastAttack = now
             this.scene.player.applyDamage(this.attackDamage)
             this.sprite.setVelocityX(0)
@@ -196,6 +204,7 @@ export default class Enemy {
             }
         })
 
+        this.canRandomPause = false
         this.canPauseEvent?.remove()
         this.canPauseEvent = this.scene.time.addEvent({
             delay: Phaser.Math.Between(PAUSE_DELAY_MIN, PAUSE_DELAY_MAX),
