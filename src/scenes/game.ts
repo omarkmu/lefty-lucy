@@ -9,7 +9,15 @@ export default class Game extends Scene {
             name: 'game',
             background: 'bg',
             isCombatLevel: true,
-            playerSpawn: [100, 525]
+            playerSpawn: [100, 525],
+            enemies: [
+                {
+                    spawn: [500, 400]
+                },
+                {
+                    spawn: [1000, 525]
+                }
+            ]
         })
     }
 

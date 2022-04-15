@@ -1,6 +1,8 @@
 // Authors: Omar Muhammad
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
+import { EnemyDefinition } from '../constants'
+import Enemy from './enemy'
 import Player from './player'
 import UI from './ui'
 
@@ -11,18 +13,21 @@ import UI from './ui'
  export default class Scene extends Phaser.Scene {
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
+    playerProjectiles: Phaser.Physics.Arcade.Group
+    enemyGroup: Phaser.Physics.Arcade.Group
     player: Player
+    enemies: Enemy[]
     ui: UI
 
     constructor(private _options: SceneOptions) {
-        const opts = _options as any
-        super(opts.config ?? opts.name)
+        super((_options as any).config ?? _options.name)
 
         this.player = new Player(this, {
             x: this._options.playerSpawn[0],
             y: this._options.playerSpawn[1]
         })
 
+        this.enemies = (_options.enemies ?? []).map(def => new Enemy(this, def))
         this.ui = new UI(this)
     }
 
@@ -32,13 +37,14 @@ import UI from './ui'
 
     preload() {
         this.player.preload()
+        Enemy.preload(this) // only need to preload enemy assets once
         this.ui.preload()
     }
 
     create() {
         // initialize background
         this.background = this.add.image(0, 0, this._options.background)
-        this.background.setOrigin(0, 0)
+        this.background.setOrigin(0)
 
         // initialize camera and physics bounds
         this.cameras.main.setBounds(0, 0, this.background.width, this.background.height)
@@ -55,11 +61,32 @@ import UI from './ui'
             const info = platformDefs[i]
             const sprite = this.platforms.create(info.x, info.y, undefined, undefined, false)
             sprite.displayWidth = 1
-            sprite.setOrigin(0, 0)
+            sprite.setOrigin(0)
 
             sprite.enableBody()
             sprite.setSize(info.w, info.h, 0)
         }
+
+        this.enemyGroup = this.physics.add.group()
+        this.playerProjectiles = this.physics.add.group()
+
+        // initialize enemies
+        for (const enemy of this.enemies) {
+            enemy.create()
+        }
+
+        this.physics.add.collider(this.enemyGroup, this.platforms, (enemy, platform) => {
+            const owner = (enemy as any).owner
+            owner.currentPlatform = platform
+        })
+
+        this.physics.add.overlap(this.enemyGroup, this.playerProjectiles, (enemy, projectile) => {
+            const owner = (enemy as any).owner
+            if (!owner || owner.isDead) return
+
+            owner.applyDamage((projectile as any).damage)
+            projectile.destroy()
+        })
 
         // initialize player
         this.player.create()
@@ -73,10 +100,14 @@ import UI from './ui'
     }
 
     update() {
+        for (const enemy of this.enemies) {
+            if (enemy.isDead) continue
+            enemy.update()
+        }
+
         this.player.update()
     }
 }
-
 
 
 interface SceneOptions {
@@ -96,4 +127,8 @@ interface SceneOptions {
      * The spawn location of the player. Specified as [X, Y].
      */
     playerSpawn: [number, number]
+    /**
+     * Information about enemies which should be spawned.
+     */
+    enemies?: EnemyDefinition[]
 }

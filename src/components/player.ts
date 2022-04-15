@@ -2,22 +2,19 @@
 // Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 
 import type Scene from './scene'
-import type { Keys } from '../constants'
+import { Direction, Keys, SpawnLocation } from '../constants'
 
 const keyJustDown = Phaser.Input.Keyboard.JustDown
 
+const INVINCIBILITY_DELAY = 650
 const X_VELOCITY = 160
 const Y_VELOCITY = 200
 const FIREBALL_VELOCITY = 200
 const MELEE_COOLDOWN = 100
+const MELEE_RANGE = 10
 const FIREBALL_COOLDOWN = 600
 const FIREBALL_DESTROY_DELAY = 5000
 const ATTACK_COOLDOWNS = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
-
-const enum Direction {
-    Left = -1,
-    Right = 1
-}
 
 /**
  * Keeps track of player information and manages input.
@@ -26,7 +23,7 @@ const enum Direction {
 export default class Player {
     _lives: number = 3 // remaining lives
     lastDirection: Direction = Direction.Right // default to right because stages are left to right
-    isFiring: boolean = false
+    isInvincible: boolean = false
 
     // 0 = melee, 1 = fireball
     attackCooldownState = [false, false]
@@ -45,6 +42,14 @@ export default class Player {
 
     get lives() { return this._lives }
     set lives(value) {
+        if (value < this._lives) {
+            // TODO: hurt sound effect
+        } else if (value > this._lives) {
+            // TODO: (maybe) heal sound effect
+        } else {
+            return
+        }
+
         this._lives = value
 
         // rerender hearts UI
@@ -71,9 +76,11 @@ export default class Player {
      * Initializes the player sprite and animations.
      */
     create() {
-        this.sprite = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'dude')
+        const sprite: any = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'dude')
             .setCollideWorldBounds(true)
-            .setOrigin(0)
+        
+        sprite.owner = this
+        this.sprite = sprite
 
         this.keys = {
             up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -165,12 +172,13 @@ export default class Player {
             this.attackTrigger[1] = false
 
             const xOffset = this.lastDirection === -1 ? -40 : 20
-            const fireball = this.scene.physics.add.sprite(this.sprite.x + xOffset, this.sprite.y, 'fireball')
+            const fireball = this.scene.playerProjectiles.create(this.sprite.x + xOffset, this.sprite.y, 'fireball')
                 .setOrigin(0)
                 .setVelocityX(this.lastDirection * FIREBALL_VELOCITY)
                 .setImmovable(false)
 
             fireball.body.setAllowGravity(false)
+            fireball.damage = 1
 
             this.scene.time.addEvent({
                 delay: FIREBALL_DESTROY_DELAY,
@@ -178,9 +186,18 @@ export default class Player {
             })
         }
     }
-}
 
-interface SpawnLocation {
-    x: number
-    y: number
+    applyDamage(lives: number) {
+        if (this.isInvincible) return
+
+        this.lives -= lives
+        if (this.lives <= 0) return
+
+        // so the player doesn't get hurt too quickly, temporary invincibility
+        this.isInvincible = true
+        this.scene.time.addEvent({
+            delay: INVINCIBILITY_DELAY,
+            callback: () => this.isInvincible = false
+        })
+    }
 }
