@@ -3,15 +3,18 @@
 import { Direction, EnemyDefinition, SpawnLocation } from '../constants'
 import Scene from './scene'
 
-const VELOCITY = 150
+const VELOCITY = 100
+
+const PAUSE_DELAY_MIN = 10000
+const PAUSE_DELAY_MAX = 30000
 
 const TURN_PAUSE_MIN = 600
 const TURN_PAUSE_MAX = 1000
 
 const RAND_PAUSE_MIN = 1000
 const RAND_PAUSE_MAX = 3000
-const RAND_PAUSE_DELAY = 10000
-const RAND_PAUSE_CHANCE = 0.25
+
+const FORGET_TIME = 1000
 
 export default class Enemy {
     static preload(scene: Scene) {
@@ -28,14 +31,21 @@ export default class Enemy {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     
     health: number
-    playerDistance: number
-    isTargetingPlayer: boolean = false
     initialDirection: Direction
     currentPlatform: Phaser.Types.Physics.Arcade.GameObjectWithBody
 
+    attackDamage: number
+    attackDelay: number
+    attackRange: number
+    playerDistance: number
+    isTargetingPlayer: boolean = false
+    lastAttack: number = 0
+    lastSeenPlayer: number = 0
+
     isPatrolEnabled: boolean
     isPatrolPaused: boolean = false
-    lastRandomPause: number = 0
+    canRandomPause: boolean = false
+    canPauseEvent: Phaser.Time.TimerEvent
     savedVelocity: number
 
     minX?: number
@@ -49,7 +59,10 @@ export default class Enemy {
 
         this.health = def.health ?? 1
         this.hearingRange = def.hearingRange ?? 115
-        this.visionRange = def.visionRange ?? 400
+        this.visionRange = def.visionRange ?? 350
+        this.attackRange = def.attackRange ?? 40
+        this.attackDamage = def.attackDamage ?? 1
+        this.attackDelay = def.attackDelay ?? 1000
         this.minX = def.patrolRange?.[0]
         this.maxX = def.patrolRange?.[1]
         this.isPatrolEnabled = def.disablePatrol !== true
@@ -73,7 +86,8 @@ export default class Enemy {
     update() {
         this.playerDistance = Phaser.Math.Distance.BetweenPoints(this.sprite, this.scene.player.sprite)
 
-        if (this.isPatrolEnabled) {
+        this.tryCombat()
+        if (this.isPatrolEnabled && !this.isTargetingPlayer) {
             this.patrol()
         }
 
@@ -86,14 +100,58 @@ export default class Enemy {
         }
     }
 
+    tryCombat() {
+        const dist = this.playerDistance
+        const velX = this.sprite.body.velocity.x
+        const x = this.sprite.x
+
+        const isPlayerBehind = (velX > 0 && this.scene.player.x < x) || (velX < 0 && this.scene.player.x > x)
+        const isWithinY = Phaser.Math.Distance.Between(0, this.sprite.y, 0, this.scene.player.y) <= this.sprite.height / 2
+        const isPlayerWithinRange = isWithinY && (dist <= this.hearingRange || (dist <= this.visionRange && !isPlayerBehind))
+
+        const now = this.scene.time.now
+        if (!isPlayerWithinRange) {
+            if (now - this.lastSeenPlayer >= FORGET_TIME) {
+                this.isTargetingPlayer = false
+            }
+
+            if (!this.isTargetingPlayer) {
+                return
+            }
+        }
+
+        this.isTargetingPlayer = true
+        this.lastSeenPlayer = now
+
+        const isWithinAttackRange = dist < this.attackRange
+        if (!isWithinAttackRange) {
+            const minX = this.minX ?? this.currentPlatform?.body.x ?? 0
+            const maxX = this.maxX ?? this.currentPlatform?.body.width ?? this.scene.background.width
+
+            // follow player
+            if (x < this.scene.player.x && x < maxX) {
+                this.sprite.setVelocityX(VELOCITY)
+            } else if (x > this.scene.player.x && x > minX) {
+                this.sprite.setVelocityX(-VELOCITY)
+            } else {
+                this.sprite.setVelocityX(0)
+            }
+
+            return
+        }
+
+        if (isWithinAttackRange && now - this.lastAttack >= this.attackDelay) {
+            this.lastAttack = now
+            this.scene.player.applyDamage(this.attackDamage)
+            this.sprite.setVelocityX(0)
+        }
+    }
+
     patrol() {
         if (this.isPatrolPaused) return
 
-        // determine if the enemy should pause movement
-        const now = this.scene.time.now
-        const checkSuccess = Phaser.Math.FloatBetween(0, 1) <= RAND_PAUSE_CHANCE
-        const canPause = this.lastRandomPause < now - RAND_PAUSE_DELAY
-        if (checkSuccess && canPause) {
+        // pause the enemy's movement randomly
+        if (this.canRandomPause) {
             this.pauseMovement(true)
             return
         }
@@ -132,14 +190,16 @@ export default class Enemy {
         this.scene.time.addEvent({
             delay: Phaser.Math.Between(pauseMin, pauseMax),
             callback: () => {
+                if (!this.sprite) return
                 this.sprite.setVelocityX(oldVelocity)
-
-                if (random) {
-                    this.lastRandomPause = this.scene.time.now
-                }
-
                 this.isPatrolPaused = false
             }
+        })
+
+        this.canPauseEvent?.remove()
+        this.canPauseEvent = this.scene.time.addEvent({
+            delay: Phaser.Math.Between(PAUSE_DELAY_MIN, PAUSE_DELAY_MAX),
+            callback: () => this.canRandomPause = true
         })
     }
 }

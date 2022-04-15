@@ -17,7 +17,10 @@ export interface EnemyDefinition {
     /**
      * The [X, Y] location of the enemy spawn.
      */
-    spawn: [number, number],
+    spawn: [number, number]
+    attackRange?: number
+    attackDamage?: number
+    attackDelay?: number
     health?: number
     hearingRange?: number
     visionRange?: number
