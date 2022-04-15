@@ -186,7 +186,7 @@ export default class Enemy {
     /**
      * Momentarily pause enemy movement before resuming patrol.
      */
-     pauseMovement(random = false) {
+    pauseMovement(random = false) {
         const oldVelocity = this.sprite.body.velocity.x
         this.sprite.setVelocityX(0)
         this.isPatrolPaused = true
