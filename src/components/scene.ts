@@ -1,6 +1,7 @@
 // Authors: Omar Muhammad
 
 import 'phaser'
+import { test_platform } from '../constants'
 import Player from './player'
 import UI from './ui'
 
@@ -13,13 +14,17 @@ import UI from './ui'
     platforms: Phaser.Physics.Arcade.StaticGroup
     player: Player
     ui: UI
+    
 
     constructor(private _options: SceneOptions) {
-        const opts = _options as any
-        super(opts.config ?? opts.name)
-
-        this.player = new Player(this)
-        this.ui = new UI(this)
+       
+        //const opts = _options as any
+        super((_options as any).name)
+        
+       // this.level_platforms = test_platform
+       this.ui = new UI(this) 
+       this.player = new Player(this)
+        
     }
 
     get isCombatLevel() {
@@ -29,6 +34,8 @@ import UI from './ui'
     preload() {
         this.player.preload()
         this.ui.preload()
+        this.load.image('platform', 'assets/platform.png');
+
     }
 
     create() {
@@ -56,6 +63,22 @@ import UI from './ui'
             sprite.enableBody()
             sprite.setSize(info.w, info.h, 0)
         }
+
+       
+
+      //creates platform design for each level
+      //takes a string thats located in constants.ts
+       var platforms;
+        platforms = this.physics.add.staticGroup();
+        let q = 0;
+        let p = 0;
+        for(let i = 0; i < test_platform.length; i++){
+            q = test_platform[i] as unknown as number
+            for(let j = 0; j <= test_platform[i].length; j++){
+                p = test_platform[j] as unknown as number
+           platforms.create(q, p, 'platform');
+        }
+    }
 
         // initialize player
         this.player.create()
