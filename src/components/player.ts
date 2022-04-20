@@ -83,17 +83,6 @@ export default class Player {
     }
 
     /**
-     * Loads assets related to the player.
-     */
-    preload() {
-        this.scene.load.image('fireball', 'assets/fireball.png')
-        this.scene.load.spritesheet('dude', 'assets/dude.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        })
-    }
-
-    /**
      * Initializes the player sprite and animations.
      */
     create() {

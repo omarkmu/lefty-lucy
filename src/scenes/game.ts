@@ -17,9 +17,4 @@ export default class Game extends Scene {
             ])
         })
     }
-
-    preload() {
-        super.preload()
-        this.load.image('bg', 'assets/scrolltest.png')
-    }
 }

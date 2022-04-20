@@ -56,11 +56,6 @@ export default class Scene extends Phaser.Scene {
         return this._options.isCombatLevel ?? false
     }
 
-    preload() {
-        this.player.preload()
-        Enemy.preload(this) // only need to preload enemy assets once
-        this.ui.preload()
-    }
 
     create() {
         // initialize background

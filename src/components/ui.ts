@@ -15,10 +15,6 @@ export default class UI {
         this.dialogue = new DialogueManager(this)
     }
 
-    preload() {
-        this.scene.load.image('heart', 'assets/heart.png')
-    }
-
     create() {
         // don't render hearts in the overworld
         if (this.scene.isCombatLevel) {
