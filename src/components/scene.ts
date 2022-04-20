@@ -7,10 +7,13 @@ import Player from './player'
 import UI from './ui'
 
 
+const ZONE_SIZE_DEFAULT = 100
+
+
 /**
  * Base class for game scenes.
  */
- export default class Scene extends Phaser.Scene {
+export default class Scene extends Phaser.Scene {
     static generateEnemies(spawnLocations: [number, number][], enemyDef?: Omit<EnemyDefinition, 'spawn'>): EnemyDefinition[] {
         return spawnLocations.map(spawn => Object.assign({ spawn }, enemyDef ?? {}))
     }
@@ -19,6 +22,8 @@ import UI from './ui'
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group
     enemyGroup: Phaser.Physics.Arcade.Group
+    zoneGroup: Phaser.Physics.Arcade.StaticGroup
+    zoneCallbacks: Record<string, () => void> = {}
     player: Player
     enemies: Enemy[]
     ui: UI
@@ -75,6 +80,15 @@ import UI from './ui'
             sprite.setSize(info.w, info.h, 0)
         }
 
+        // initialize zones
+        this.zoneGroup = this.physics.add.staticGroup()
+
+        if (this._options.winZone) {
+            this.createZone('win', this._options.winZone, () => {
+                // TODO: handle win here
+            })
+        }
+
         this.enemyGroup = this.physics.add.group()
         this.playerProjectiles = this.physics.add.group()
 
@@ -83,16 +97,16 @@ import UI from './ui'
             enemy.create()
         }
 
-        this.physics.add.collider(this.enemyGroup, this.platforms, (enemy, platform) => {
-            const owner = (enemy as any).owner
-            owner.currentPlatform = platform
+        this.physics.add.collider(this.enemyGroup, this.platforms, (enemySprite, platform) => {
+            const enemy = (enemySprite as any).owner
+            enemy.currentPlatform = platform
         })
 
-        this.physics.add.overlap(this.enemyGroup, this.playerProjectiles, (enemy, projectile) => {
-            const owner = (enemy as any).owner
-            if (!owner || owner.isDead) return
+        this.physics.add.overlap(this.enemyGroup, this.playerProjectiles, (enemySprite, projectile) => {
+            const enemy = (enemySprite as any).owner
+            if (!enemy || enemy.isDead) return
 
-            owner.applyDamage((projectile as any).damage)
+            enemy.applyDamage((projectile as any).damage)
             projectile.destroy()
         })
 
@@ -101,7 +115,13 @@ import UI from './ui'
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
         this.physics.add.collider(this.player.sprite, this.platforms)
+        this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zoneSprite) => {
+            const zone = zoneSprite as any
+            this.zoneCallbacks[zone.zoneID]?.()
+        })
+
         this.platforms.refresh()
+        this.zoneGroup.refresh()
 
         // initialize UI
         this.ui.create()
@@ -115,8 +135,23 @@ import UI from './ui'
 
         this.player.update()
     }
+
+    createZone(id: string, zone: Zone, cb: () => void) {
+        const w = zone[2] ?? ZONE_SIZE_DEFAULT
+        const h = zone[3] ?? w
+        const sprite = this.zoneGroup.create(zone[0], zone[1], undefined, undefined, false)
+        sprite.setSize(w, h, 0)
+
+        sprite.zoneID = id
+        this.zoneCallbacks[id] = cb
+    }
 }
 
+
+type Zone =
+    | [number, number]
+    | [number, number, number]
+    | [number, number, number, number]
 
 interface SceneOptions {
     /**
@@ -149,4 +184,10 @@ interface SceneOptions {
      * Information about enemies which should be spawned.
      */
     enemies?: EnemyDefinition[]
+    /**
+     * A zone that describes the target area the player must enter to pass the level.
+     * Specified as [X, Y] for default width/height, [X, Y, W] for height = W,
+     * or as [X, Y, W, H].
+     */
+    winZone?: Zone
 }
