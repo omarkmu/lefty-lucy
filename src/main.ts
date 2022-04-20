@@ -2,7 +2,7 @@
 
 import 'phaser'
 import Game from './scenes/game'
-import LoadingScene from './scenes/loading'
+import LoadingScreen from './scenes/loading'
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants'
 
 new Phaser.Game({
@@ -10,7 +10,7 @@ new Phaser.Game({
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
     scene: [
-        LoadingScene,
+        LoadingScreen,
         Game,
     ],
     physics: {

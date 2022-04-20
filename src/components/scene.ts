@@ -155,9 +155,7 @@ export default class Scene extends Phaser.Scene {
         if (cb) this.zoneCallbacks[id] = cb
     }
 
-    onPlayerWon() {
-        this.state = SceneState.PlayerWon
-
+    freezeEntities() {
         // freeze enemies, player, and projectiles
         for (const enemy of this.enemies) {
             if (enemy.isDead) continue
@@ -167,7 +165,11 @@ export default class Scene extends Phaser.Scene {
         this.playerProjectiles.setVelocity(0, 0)
         this.player.sprite.disableBody()
         this.anims.pauseAll()
+    }
 
+    onPlayerWon() {
+        this.state = SceneState.PlayerWon
+        this.freezeEntities()
         this.ui.dialogue.show(LEVEL_COMPLETE_DIALOGUE, this.nextLevel.bind(this))
     }
 
@@ -177,10 +179,7 @@ export default class Scene extends Phaser.Scene {
 }
 
 
-type Zone =
-    | [number, number]
-    | [number, number, number]
-    | [number, number, number, number]
+type Zone = [number, number, number?, number?]
 
 interface SceneOptions {
     /**

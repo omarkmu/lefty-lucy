@@ -5,7 +5,7 @@
 const ELLIPSIS_DELAY = 250
 
 // not extending the base scene; this is a special case
-export default class LoadingScene extends Phaser.Scene {
+export default class LoadingScreen extends Phaser.Scene {
     ellipsisEvent: Phaser.Time.TimerEvent
 
     drawLoadingElements() {
