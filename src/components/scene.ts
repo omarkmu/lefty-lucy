@@ -7,7 +7,14 @@ import Player from './player'
 import UI from './ui'
 
 
-const ZONE_SIZE_DEFAULT = 100
+const ZONE_SIZE_DEFAULT = 50
+const LEVEL_COMPLETE_DIALOGUE = [
+    'Level complete. Press Enter to continue.'
+]
+const enum SceneState {
+    Running,
+    PlayerWon,
+}
 
 
 /**
@@ -18,6 +25,7 @@ export default class Scene extends Phaser.Scene {
         return spawnLocations.map(spawn => Object.assign({ spawn }, enemyDef ?? {}))
     }
 
+    state: SceneState = SceneState.Running
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group
@@ -48,11 +56,6 @@ export default class Scene extends Phaser.Scene {
         return this._options.isCombatLevel ?? false
     }
 
-    preload() {
-        this.player.preload()
-        Enemy.preload(this) // only need to preload enemy assets once
-        this.ui.preload()
-    }
 
     create() {
         // initialize background
@@ -84,9 +87,7 @@ export default class Scene extends Phaser.Scene {
         this.zoneGroup = this.physics.add.staticGroup()
 
         if (this._options.winZone) {
-            this.createZone('win', this._options.winZone, () => {
-                // TODO: handle win here
-            })
+            this.createZone('win', this._options.winZone, this.onPlayerWon.bind(this))
         }
 
         this.enemyGroup = this.physics.add.group()
@@ -115,9 +116,8 @@ export default class Scene extends Phaser.Scene {
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
         this.physics.add.collider(this.player.sprite, this.platforms)
-        this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zoneSprite) => {
-            const zone = zoneSprite as any
-            this.zoneCallbacks[zone.zoneID]?.()
+        this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zone) => {
+            this.zoneCallbacks[(zone as any).zoneID]?.()
         })
 
         this.platforms.refresh()
@@ -125,9 +125,17 @@ export default class Scene extends Phaser.Scene {
 
         // initialize UI
         this.ui.create()
+
+        // resume animations, if paused
+        this.anims.resumeAll()
     }
 
     update() {
+        if (this.state === SceneState.PlayerWon) {
+            this.ui.handleInput(this.player.keys)
+            return
+        }
+
         for (const enemy of this.enemies) {
             if (enemy.isDead) continue
             enemy.update()
@@ -136,14 +144,35 @@ export default class Scene extends Phaser.Scene {
         this.player.update()
     }
 
-    createZone(id: string, zone: Zone, cb: () => void) {
+    createZone(id: string, zone: Zone, cb?: () => void) {
         const w = zone[2] ?? ZONE_SIZE_DEFAULT
         const h = zone[3] ?? w
+
         const sprite = this.zoneGroup.create(zone[0], zone[1], undefined, undefined, false)
         sprite.setSize(w, h, 0)
-
         sprite.zoneID = id
-        this.zoneCallbacks[id] = cb
+
+        if (cb) this.zoneCallbacks[id] = cb
+    }
+
+    onPlayerWon() {
+        this.state = SceneState.PlayerWon
+
+        // freeze enemies, player, and projectiles
+        for (const enemy of this.enemies) {
+            if (enemy.isDead) continue
+            enemy.sprite.disableBody()
+        }
+
+        this.playerProjectiles.setVelocity(0, 0)
+        this.player.sprite.disableBody()
+        this.anims.pauseAll()
+
+        this.ui.dialogue.show(LEVEL_COMPLETE_DIALOGUE, this.nextLevel.bind(this))
+    }
+
+    nextLevel() {
+        this.scene.start(this._options.nextLevel ?? 'mainMenu')
     }
 }
 
@@ -155,17 +184,22 @@ type Zone =
 
 interface SceneOptions {
     /**
+     * The unique name of the scene.
+     */
+    name: string
+    /**
      * The key (provided to load.image) of the background image for this scene.
      */
     background: string
     /**
+     * The name of the next level to load after this level is completed.
+     * Returns to the main menu if no next level is specified.
+     */
+    nextLevel?: string
+    /**
      * Defines whether this is a combat or story level.
      */
     isCombatLevel?: boolean
-    /**
-     * The unique name of the scene.
-     */
-    name: string
     /**
      * The spawn location of the player. Specified as [X, Y].
      */

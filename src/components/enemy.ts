@@ -24,14 +24,6 @@ const enum AIMode {
 }
 
 export default class Enemy {
-    static preload(scene: Scene) {
-        // TODO: change this to an enemy sprite (or multiple, depending on enemy type)
-        scene.load.spritesheet('dude', 'assets/dude.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        })
-    }
-
     hearingRange: number
     visionRange: number
     spawn: SpawnLocation
