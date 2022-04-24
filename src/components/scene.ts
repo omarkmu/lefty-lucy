@@ -1,7 +1,8 @@
 // Authors: Omar Muhammad
 
 import 'phaser'
-import { test_platform } from '../constants'
+import { level_3 } from '../constants'
+import { level_3_s } from '../constants'
 import Player from './player'
 import UI from './ui'
 
@@ -34,7 +35,8 @@ import UI from './ui'
     preload() {
         this.player.preload()
         this.ui.preload()
-        this.load.image('platform', 'assets/platform.png');
+        this.load.image('platform', 'assets/5.png');
+        this.load.image('sideways', 'assets/sideways.png');
 
     }
 
@@ -68,27 +70,28 @@ import UI from './ui'
 
       //creates platform design for each level
       //takes a string thats located in constants.ts
-       var platforms;
-        platforms = this.physics.add.staticGroup();
-        let q = 0;
-        let p = 0;
-        for(let i = 0; i < test_platform.length; i++){
-            q = test_platform[i] as unknown as number
-            for(let j = 0; j <= test_platform[i].length; j++){
-                p = test_platform[j] as unknown as number
-           platforms.create(q, p, 'platform');
-        }
+      
+      const platforms = this.physics.add.staticGroup()
+    for (let i = 0; i < level_3.length; i++) {
+        const [x, y] = level_3[i]
+        platforms.create(x, y, 'platform')
+    }
+    for (let i = 0; i < level_3_s.length; i++) {
+        const [x, y] = level_3_s[i]
+        platforms.create(x-25, y+30, 'sideways')
     }
 
         // initialize player
         this.player.create()
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
-        this.physics.add.collider(this.player.sprite, this.platforms)
+        this.physics.add.collider(this.player.sprite, this.platforms);
         this.platforms.refresh()
 
         // initialize UI
         this.ui.create()
+
+    
     }
 
     update() {
