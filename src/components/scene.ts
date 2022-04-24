@@ -1,8 +1,8 @@
 // Authors: Omar Muhammad
 
 import 'phaser'
-import { level_3 } from '../constants'
-import { level_3_s } from '../constants'
+import { level_1, level_2 } from '../constants'
+import { level_1_s, level_2_s } from '../constants'
 import Player from './player'
 import UI from './ui'
 
@@ -72,13 +72,13 @@ import UI from './ui'
       //takes a string thats located in constants.ts
       
       const platforms = this.physics.add.staticGroup()
-    for (let i = 0; i < level_3.length; i++) {
-        const [x, y] = level_3[i]
+    for (let i = 0; i < level_2.length; i++) {
+        const [x, y] = level_2[i]
         platforms.create(x, y, 'platform')
     }
-    for (let i = 0; i < level_3_s.length; i++) {
-        const [x, y] = level_3_s[i]
-        platforms.create(x-25, y+30, 'sideways')
+    for (let i = 0; i < level_2_s.length; i++) {
+        const [x, y] = level_2_s[i]
+        platforms.create(x, y, 'sideways')
     }
 
         // initialize player
