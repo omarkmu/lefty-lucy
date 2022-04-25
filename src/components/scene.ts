@@ -2,6 +2,8 @@
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
 import { EnemyDefinition } from '../constants'
+import { level_1, level_2, level_3} from '../constants'
+import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Enemy from './enemy'
 import Player from './player'
 import UI from './ui'
@@ -40,6 +42,7 @@ export default class Scene extends Phaser.Scene {
     player: Player
     enemies: Enemy[]
     ui: UI
+    
 
     constructor(private _options: SceneOptions) {
         super(_options.name)
@@ -65,17 +68,18 @@ export default class Scene extends Phaser.Scene {
         // TODO: platforms should be supplied via the options,
         // specified as an array of objects (or otherwise) for code reusability.
         // keeping it as is for now since the platform creation code may be improved soon
+        // creates platform design for each level
+        // takes a string thats located in constants.ts
         this.platforms = this.physics.add.staticGroup()
 
-        const platformDefs = [{ x: 0, y: 575, w: this.background.width, h: 1 }]
-        for (let i = 0; i < platformDefs.length; i++) {
-            const info = platformDefs[i]
-            const sprite = this.platforms.create(info.x, info.y, undefined, undefined, false)
-            sprite.displayWidth = 1
-            sprite.setOrigin(0)
-
-            sprite.enableBody()
-            sprite.setSize(info.w, info.h, 0)
+        this.addPlatform(0, 575, this.background.width, 1) // ground platform
+        for (let i = 0; i < level_2.length; i++) {
+            const [x, y] = level_2[i]
+            this.addPlatform(x, y, 278, 46, 'platform')
+        }
+        for (let i = 0; i < level_2_s.length; i++) {
+            const [x, y] = level_2_s[i]
+            this.addPlatform(x, y, 15, 70, 'sideways')
         }
 
         // initialize zones
@@ -187,6 +191,18 @@ export default class Scene extends Phaser.Scene {
 
     resetLevel() {
         this.scene.start(this._options.name)
+    }
+
+    addPlatform(x: number, y: number, width: number, height: number, img?: string) {
+        const sprite = this.platforms.create(
+            x, y,
+            img ?? undefined, undefined,
+            img !== undefined)
+
+        sprite.enableBody()
+        if (img === undefined) {
+            sprite.setSize(width, height, 0)
+        }
     }
 }
 

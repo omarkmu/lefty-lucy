@@ -68,6 +68,8 @@ export default class LoadingScreen extends Phaser.Scene {
 
         // level assets
         this.load.image('bg', 'assets/scrolltest.png')
+        this.load.image('platform', 'assets/5.png')
+        this.load.image('sideways', 'assets/sideways.png')
 
         // player assets
         this.load.image('fireball', 'assets/fireball.png')
