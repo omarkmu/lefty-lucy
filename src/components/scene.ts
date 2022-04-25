@@ -1,8 +1,8 @@
 // Authors: Omar Muhammad
 
 import 'phaser'
-import { level_1, level_2 } from '../constants'
-import { level_1_s, level_2_s } from '../constants'
+import { level_1, level_2, level_3} from '../constants'
+import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Player from './player'
 import UI from './ui'
 
@@ -86,7 +86,9 @@ import UI from './ui'
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
 
         this.physics.add.collider(this.player.sprite, this.platforms);
+      
         this.platforms.refresh()
+       
 
         // initialize UI
         this.ui.create()
