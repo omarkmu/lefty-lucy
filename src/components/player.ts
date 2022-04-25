@@ -62,6 +62,7 @@ export default class Player {
      */
     create() {
         this.sprite = this.scene.physics.add.sprite(100, 450, 'dude')
+
             .setBounce(0.2)
             .setCollideWorldBounds(true)
         this.keys = Object.assign(this.scene.input.keyboard.createCursorKeys(), {
