@@ -13,6 +13,7 @@ export default class UI {
 
     constructor(public scene: Scene) {
         this.dialogue = new DialogueManager(this)
+        this.create()
     }
 
     create() {

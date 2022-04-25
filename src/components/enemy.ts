@@ -72,6 +72,8 @@ export default class Enemy {
         this.initialDirection = Phaser.Math.Between(1, 2) === 1
             ? Direction.Left
             : Direction.Right
+        
+        this.create()
     }
 
     get x() { return this.sprite.body.x }

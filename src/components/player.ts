@@ -53,6 +53,8 @@ export default class Player {
         if (this.isSwordEnabled) {
             this.attackCooldowns[0] = SWORD_COOLDOWN
         }
+
+        this.create()
     }
 
     get x() { return this.sprite.body.x }
@@ -63,12 +65,14 @@ export default class Player {
 
     get lives() { return this._lives }
     set lives(value) {
+        if (value === this.lives) {
+            return
+        }
+
         if (value < this._lives) {
             // TODO: hurt sound effect
-        } else if (value > this._lives) {
-            // TODO: (maybe) heal sound effect
         } else {
-            return
+            // TODO: (maybe) heal sound effect
         }
 
         this._lives = value
@@ -77,8 +81,7 @@ export default class Player {
         this.scene.ui.renderLifeHearts()
 
         if (value <= 0) {
-            // TODO: show "passed out" anim or disappear,
-            // reset the level after player confirmation
+            this.scene.onPlayerDied()
         }
     }
 

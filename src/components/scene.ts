@@ -11,9 +11,14 @@ const ZONE_SIZE_DEFAULT = 50
 const LEVEL_COMPLETE_DIALOGUE = [
     'Level complete. Press Enter to continue.'
 ]
+const DIED_DIALOGUE = [
+    'Oh no. You died. Press Enter to retry.'
+]
+
 const enum SceneState {
-    Running,
+    Playing,
     PlayerWon,
+    PlayerDied,
 }
 
 
@@ -25,31 +30,19 @@ export default class Scene extends Phaser.Scene {
         return spawnLocations.map(spawn => Object.assign({ spawn }, enemyDef ?? {}))
     }
 
-    state: SceneState = SceneState.Running
+    state: SceneState
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group
     enemyGroup: Phaser.Physics.Arcade.Group
     zoneGroup: Phaser.Physics.Arcade.StaticGroup
-    zoneCallbacks: Record<string, () => void> = {}
+    zoneCallbacks: Record<string, () => void>
     player: Player
     enemies: Enemy[]
     ui: UI
 
     constructor(private _options: SceneOptions) {
-        super((_options as any).config ?? _options.name)
-
-        this.player = new Player(this, {
-            spawn: {
-                x: this._options.playerSpawn[0],
-                y: this._options.playerSpawn[1],
-            },
-            isFireballEnabled: _options.playerFireballEnabled ?? false,
-            isSwordEnabled: _options.playerSwordEnabled ?? false,
-        })
-
-        this.enemies = (_options.enemies ?? []).map(def => new Enemy(this, def))
-        this.ui = new UI(this)
+        super(_options.name)
     }
 
     get isCombatLevel() {
@@ -58,6 +51,8 @@ export default class Scene extends Phaser.Scene {
 
 
     create() {
+        this.state = SceneState.Playing
+
         // initialize background
         this.background = this.add.image(0, 0, this._options.background)
         this.background.setOrigin(0)
@@ -85,6 +80,7 @@ export default class Scene extends Phaser.Scene {
 
         // initialize zones
         this.zoneGroup = this.physics.add.staticGroup()
+        this.zoneCallbacks = {}
 
         if (this._options.winZone) {
             this.createZone('win', this._options.winZone, this.onPlayerWon.bind(this))
@@ -94,9 +90,7 @@ export default class Scene extends Phaser.Scene {
         this.playerProjectiles = this.physics.add.group()
 
         // initialize enemies
-        for (const enemy of this.enemies) {
-            enemy.create()
-        }
+        this.enemies = (this._options.enemies ?? []).map(def => new Enemy(this, def))
 
         this.physics.add.collider(this.enemyGroup, this.platforms, (enemySprite, platform) => {
             const enemy = (enemySprite as any).owner
@@ -112,26 +106,34 @@ export default class Scene extends Phaser.Scene {
         })
 
         // initialize player
-        this.player.create()
-        this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
+        this.player = new Player(this, {
+            spawn: {
+                x: this._options.playerSpawn[0],
+                y: this._options.playerSpawn[1],
+            },
+            isFireballEnabled: this._options.playerFireballEnabled ?? false,
+            isSwordEnabled: this._options.playerSwordEnabled ?? false,
+        })
 
+        this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
+        
         this.physics.add.collider(this.player.sprite, this.platforms)
-        this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zone) => {
-            this.zoneCallbacks[(zone as any).zoneID]?.()
+        this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zone: any) => {
+            this.zoneCallbacks[zone.zoneID]?.()
         })
 
         this.platforms.refresh()
         this.zoneGroup.refresh()
 
         // initialize UI
-        this.ui.create()
+        this.ui = new UI(this)
 
         // resume animations, if paused
         this.anims.resumeAll()
     }
 
     update() {
-        if (this.state === SceneState.PlayerWon) {
+        if (this.state === SceneState.PlayerWon || this.state === SceneState.PlayerDied) {
             this.ui.handleInput(this.player.keys)
             return
         }
@@ -173,8 +175,18 @@ export default class Scene extends Phaser.Scene {
         this.ui.dialogue.show(LEVEL_COMPLETE_DIALOGUE, this.nextLevel.bind(this))
     }
 
+    onPlayerDied() {
+        this.state = SceneState.PlayerDied
+        this.freezeEntities()
+        this.ui.dialogue.show(DIED_DIALOGUE, this.resetLevel.bind(this))
+    }
+
     nextLevel() {
-        this.scene.start(this._options.nextLevel ?? 'mainMenu')
+        this.scene.start(this._options.nextLevel ?? 'main-menu')
+    }
+
+    resetLevel() {
+        this.scene.start(this._options.name)
     }
 }
 
