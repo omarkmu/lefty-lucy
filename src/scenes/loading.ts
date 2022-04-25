@@ -82,6 +82,6 @@ export default class LoadingScreen extends Phaser.Scene {
     create() {
         this.ellipsisEvent?.remove()
         // TODO: change to main menu
-        this.scene.start('game')
+        this.scene.start('main-menu')
     }
 }

@@ -1,7 +1,7 @@
 // Authors: Omar Muhammad
 
 import { Direction, EnemyDefinition, SpawnLocation } from '../constants'
-import Scene from './scene'
+import Level from './level'
 
 const VELOCITY = 100
 
@@ -51,7 +51,7 @@ export default class Enemy {
     minX?: number
     maxX?: number
 
-    constructor(public scene: Scene, def: EnemyDefinition) {
+    constructor(public scene: Level, def: EnemyDefinition) {
         this.spawn = {
             x: def.spawn[0],
             y: def.spawn[1]

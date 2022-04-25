@@ -1,7 +1,7 @@
 // Authors: Omar Muhammad
 // Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 
-import type Scene from './scene'
+import type Level from './level'
 import { Direction, Keys, SpawnLocation } from '../constants'
 
 const keyJustDown = Phaser.Input.Keyboard.JustDown
@@ -45,7 +45,7 @@ export default class Player {
     isFireballEnabled: boolean
     isSwordEnabled: boolean
 
-    constructor(public scene: Scene, options: PlayerOptions) {
+    constructor(public scene: Level, options: PlayerOptions) {
         this.spawn = options.spawn
         this.isFireballEnabled = options.isFireballEnabled
         this.isSwordEnabled = options.isSwordEnabled

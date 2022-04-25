@@ -27,7 +27,7 @@ const enum SceneState {
 /**
  * Base class for game scenes.
  */
-export default class Scene extends Phaser.Scene {
+export default class Level extends Phaser.Scene {
     static generateEnemies(spawnLocations: [number, number][], enemyDef?: Omit<EnemyDefinition, 'spawn'>): EnemyDefinition[] {
         return spawnLocations.map(spawn => Object.assign({ spawn }, enemyDef ?? {}))
     }
