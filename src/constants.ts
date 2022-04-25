@@ -12,4 +12,3 @@ export const level_3_s = [[456,83], [456, 151], [456, 219], [456,287], [456,355]
 export interface Keys extends Phaser.Types.Input.Keyboard.CursorKeys {
     enter: Phaser.Input.Keyboard.Key
 }
-ç
