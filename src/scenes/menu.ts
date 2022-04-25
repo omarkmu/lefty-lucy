@@ -24,40 +24,24 @@ export default class MainMenuScene extends Phaser.Scene {
     }
 
     create() {
-        {
-            const { width, height } = this.scale
+        const { width, height } = this.scale
 
-            // Play button
-            const playButton = this.add.image(width * 0.5, height * 0.6, 'glass-panel')
-                .setDisplaySize(150, 50)
+        // Play button
+        const playButton = this.add.image(width * 0.5, height * 0.6, 'glass-panel')
+            .setDisplaySize(150, 50)
 
-            this.add.text(playButton.x, playButton.y, 'Play')
-                .setOrigin(0.5)
+        this.add.text(playButton.x, playButton.y, 'Play')
+            .setOrigin(0.5)
 
-            playButton.on('selected', () => {
-                console.log('play')
-            })
+        playButton.on('selected', () => this.scene.start('game'))
 
-            const continueButton = this.add.image(playButton.x, playButton.y + playButton.displayHeight + 10, 'glass-panel')
-                .setDisplaySize(150, 50)
+        this.buttons.push(playButton)
 
-            this.add.text(continueButton.x, continueButton.y, 'Continue')
-                .setOrigin(0.5)
+        this.buttonSelector = this.add.image(0, 0, 'cursor_pointerFlat_shadow')
+        this.selectButton(0)
 
-            playButton.on('selected', () => {
-                console.log('continue')
-            })
-
-            this.buttons.push(playButton)
-            this.buttons.push(continueButton)
-
-            this.buttonSelector = this.add.image(0, 0, 'cursor_pointerFlat_shadow')
-            this.selectButton(0)
-
-            let title_text = this.add.text(275, 200, "Lefty Lucy", { font: "42px" })
-            this.add.text(200, 250, "Arrow Keys to move Space Bar to Select")
-
-        }
+        this.add.text(275, 200, "Lefty Lucy", { font: "42px" })
+        this.add.text(285, 250, "Press Spacebar to play")
     }
 
     selectButton(index: number) {

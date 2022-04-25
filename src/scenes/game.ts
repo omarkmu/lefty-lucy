@@ -1,21 +1,20 @@
-// Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
-// Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
 // Authors: Omar Muhammad
 
-import Scene from '../components/scene'
+import Level from '../components/level'
 
 // This should represent a single level of the game
-export default class Game extends Scene {
+export default class Game extends Level {
     constructor() {
         super({
             name: 'game',
             background: 'bg',
-            isCombatLevel: true
+            isCombatLevel: true,
+            playerSpawn: [100, 525],
+            winZone: [800, 490],
+            enemies: Level.generateEnemies([
+                [500, 400],
+                [1000, 525]
+            ])
         })
-    }
-
-    preload() {
-        super.preload()
-        this.load.image('bg', 'assets/scrolltest.png')
     }
 }

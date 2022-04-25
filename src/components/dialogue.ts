@@ -7,6 +7,7 @@ export default class DialogueManager {
     dialogueBox: DialogueBox
     currentIndex: number
     lines: [string, number][] = []
+    onComplete?: () => void
 
     constructor(public ui: UI) {
         this.dialogueBox = new DialogueBox(ui)
@@ -18,7 +19,7 @@ export default class DialogueManager {
         this.dialogueBox.create()
     }
 
-    show(lines?: (string | string[])[]) {
+    show(lines?: (string | string[])[], onComplete?: () => void) {
         if (!lines) {
             this.dialogueBox.show()
             return
@@ -49,6 +50,7 @@ export default class DialogueManager {
 
         this.currentIndex = -1
         this.lines = processedLines
+        this.onComplete = onComplete
         this.moveNext()
         this.dialogueBox.show()
     }
@@ -69,6 +71,8 @@ export default class DialogueManager {
         } else {
             this.lines = []
             this.hide()
+            this.onComplete?.()
+            this.onComplete = undefined
         }
     }
 
