@@ -14,13 +14,14 @@ export default class MountainPath extends Level {
             backgroundMusic: 'lvl2',
             nextLevel: "cave",
             isCombatLevel: true,
-            playerSpawn: [100, 525],
+            playerSpawn: [100, 543],
             platformDefaultColor: 0x5bae50,
             winZone: [1134, 139],
             playerFireballEnabled: true,
             enemies: Level.generateEnemies([
-                [500, 400],
-                [1000, 525]
+                [500, 543],
+                [1000, 543], 
+                [1051,246]
             ]),
             platforms: [
                 ...level_2,
