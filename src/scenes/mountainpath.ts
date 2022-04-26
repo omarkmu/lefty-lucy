@@ -16,7 +16,7 @@ export default class MountainPath extends Level {
             isCombatLevel: true,
             playerSpawn: [100, 525],
             platformDefaultColor: 0x5bae50,
-            winZone: [700, 525],
+            winZone: [200, 525],
             playerFireballEnabled: true,
             enemies: Level.generateEnemies([
                 [500, 400],
@@ -24,7 +24,7 @@ export default class MountainPath extends Level {
             ]),
             platforms: [
                 ...level_2,
-                ...level_2_s.map(([x, y]) => [x-30, y+40, 18, 90])
+                ...level_2_s.map(([x, y]) => [x - 30, y + 40, 18, 90])
             ]
         })
     }

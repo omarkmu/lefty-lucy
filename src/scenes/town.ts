@@ -17,7 +17,6 @@ export default class Town extends Level {
             nextLevel: "mountainpath",
             isCombatLevel: false,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
             groundColor: 0xb56d3d,
             npcs: [
                 {

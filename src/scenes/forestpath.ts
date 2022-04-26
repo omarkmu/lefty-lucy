@@ -15,7 +15,7 @@ export default class ForestPath extends Level {
             nextLevel: "town",
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
+            winZone: [150, 525],
             platformDefaultColor: 0x304b22,
             enemies: Level.generateEnemies([
                 [500, 400],
@@ -23,7 +23,7 @@ export default class ForestPath extends Level {
             ]),
             platforms: [
                 ...level_1,
-                ...level_1_s.map(([x, y]) => [x-30, y+40, 18, 90])
+                ...level_1_s.map(([x, y]) => [x - 30, y + 40, 18, 90])
             ]
         })
     }
