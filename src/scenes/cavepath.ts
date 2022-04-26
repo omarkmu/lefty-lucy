@@ -14,7 +14,7 @@ export default class CavePath extends Level {
             backgroundMusic: 'lvl3',
             nextLevel: 'victory',
             isCombatLevel: true,
-            playerSpawn: [100, 525],
+            playerSpawn: [100, 543],
             platformDefaultColor: 0x111111,
             groundColor: 0xb13e53,
             playerFireballEnabled: true,

@@ -16,7 +16,7 @@ export default class Town extends Level {
             backgroundMusic: 'home/town',
             nextLevel: "mountainpath",
             isCombatLevel: false,
-            playerSpawn: [100, 525],
+            playerSpawn: [100, 543],
             groundColor: 0xb56d3d,
             npcs: [
                 {
@@ -41,7 +41,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilian',
-                    spawn: [200, 525],
+                    spawn: [200, 543],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! How\'re you?',
@@ -50,7 +50,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianblue',
-                    spawn: [350, 525],
+                    spawn: [350, 543],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Wonderful weather we\'re having.',
@@ -59,7 +59,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianpurple',
-                    spawn: [500, 525],
+                    spawn: [500, 543],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Looking for anything?',
@@ -68,7 +68,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civiliangreen',
-                    spawn: [600, 525],
+                    spawn: [600, 543],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: What is it? Someone stole your sweet roll?',

@@ -18,8 +18,9 @@ export default class ForestPath extends Level {
             winZone: [767.9999999999967, 26],
             platformDefaultColor: 0x304b22,
             enemies: Level.generateEnemies([
-                [500, 400],
-                [1000, 525]
+                [646, 455],
+                [1000, 525],
+                [298,151]
             ]),
             platforms: [
                 ...level_1,
