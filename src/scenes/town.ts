@@ -45,7 +45,7 @@ export default class Town extends Level {
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! How\'re you?',
-                        'Lucy: Hello, I\'m good, thanks.'
+                        'Lucy: Hello. I\'m good, thanks.'
                     ]
                 },
                 {
@@ -54,7 +54,7 @@ export default class Town extends Level {
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Wonderful weather we\'re having.',
-                        'Lucy: Hello, it is isn\'t it.'
+                        'Lucy: Hi. It is, isn\'t it.'
                     ]
                 },
                 {
