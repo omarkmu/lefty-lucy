@@ -9,6 +9,7 @@ export default class MountainPath extends Level {
         super({
             name: 'mountainpath',
             background: 'mountainpath',
+            backgroundMusic: 'lvl2',
             nextLevel: "cave",
             isCombatLevel: true,
             playerSpawn: [100, 525],

@@ -8,6 +8,7 @@ export default class ForestPath extends Level {
         super({
             name: 'forestpath',
             background: 'forestpath',
+            backgroundMusic: 'lvl1',
             nextLevel: "town",
             isCombatLevel: true,
             playerSpawn: [100, 525],
