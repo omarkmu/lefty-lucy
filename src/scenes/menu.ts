@@ -32,7 +32,7 @@ export default class MainMenuScene extends Phaser.Scene {
         this.add.text(playButton.x, playButton.y, 'Play')
             .setOrigin(0.5)
 
-        playButton.on('selected', () => this.scene.start('home'))
+        playButton.on('selected', () => this.scene.start('backstory'))
 
         this.buttons.push(playButton)
 
