@@ -71,6 +71,7 @@ export default class LoadingScreen extends Phaser.Scene {
         // level assets
         this.load.image('menu', 'assets/leftylucyfront2.png')
         this.load.image('victory', 'assets/leftylucyfront1.png')
+        this.load.image('backstory', 'assets/backstory.png')
         this.load.image('bg', 'assets/forest_background.png')
         this.load.image('home', 'assets/lucyhousebackground2.png')
         this.load.image('forestpath', 'assets/forest_background.png')
@@ -152,22 +153,22 @@ export default class LoadingScreen extends Phaser.Scene {
         // player animations
         this.anims.create({
             key: 'lucy_stand_left',
-            frames: [ { frame: 1 } ],
+            frames: [{ frame: 1 }],
             defaultTextureKey: 'lucy_walk'
         })
         this.anims.create({
             key: 'lucy_stand_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'lucy_walk'
         })
         this.anims.create({
             key: 'lucy_stand_sword_left',
-            frames: [ { frame: 1 } ],
+            frames: [{ frame: 1 }],
             defaultTextureKey: 'lucy_walk_sword'
         })
         this.anims.create({
             key: 'lucy_stand_sword_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'lucy_walk_sword'
         })
 
@@ -198,22 +199,22 @@ export default class LoadingScreen extends Phaser.Scene {
 
         this.anims.create({
             key: 'lucy_jump_left',
-            frames: [ { frame: 2 } ],
+            frames: [{ frame: 2 }],
             defaultTextureKey: 'lucy_jump_and_punch'
         })
         this.anims.create({
             key: 'lucy_jump_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'lucy_jump_and_punch'
         })
         this.anims.create({
             key: 'lucy_jump_sword_left',
-            frames: [ { frame: 2 } ],
+            frames: [{ frame: 2 }],
             defaultTextureKey: 'lucy_jump_and_punch_sword'
         })
         this.anims.create({
             key: 'lucy_jump_sword_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'lucy_jump_and_punch_sword'
         })
 
@@ -257,12 +258,12 @@ export default class LoadingScreen extends Phaser.Scene {
         // enemy animations
         this.anims.create({
             key: 'enemy_stand_left',
-            frames: [ { frame: 1 } ],
+            frames: [{ frame: 1 }],
             defaultTextureKey: 'enemy_walk'
         })
         this.anims.create({
             key: 'enemy_stand_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'enemy_walk'
         })
         this.anims.create({
@@ -291,12 +292,12 @@ export default class LoadingScreen extends Phaser.Scene {
         // boss animations
         this.anims.create({
             key: 'boss_stand_left',
-            frames: [ { frame: 1 } ],
+            frames: [{ frame: 1 }],
             defaultTextureKey: 'boss_walk'
         })
         this.anims.create({
             key: 'boss_stand_right',
-            frames: [ { frame: 5 } ],
+            frames: [{ frame: 5 }],
             defaultTextureKey: 'boss_walk'
         })
         this.anims.create({
