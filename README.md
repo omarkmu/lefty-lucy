@@ -1,5 +1,7 @@
 # Lefty Lucy
 
+https://lefty-lucy.herokuapp.com
+
 Lefty Lucy is a game centered around a young left-handed girl in a dystopian society of right-handed superiority.  
 Created as a project for Fundamentals of Game Design at GSU.
 
