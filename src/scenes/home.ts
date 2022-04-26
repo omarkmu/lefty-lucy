@@ -11,14 +11,14 @@ export default class Home extends Level {
             backgroundMusic: 'home/town',
             nextLevel: "forestpath",
             isCombatLevel: false,
-            playerSpawn: [100, 508],
+            playerSpawn: [100, 525],
             groundY: 540,
             groundSize: 65,
             groundColor: 0x865322,
             npcs: [
                 {
                     type: 'mom',
-                    spawn: [564, 508],
+                    spawn: [564, 525],
                     interactDialogue: [
                         'Mom: Lucy, it\'s not what you think.',
                         'Lucy: I found the notebook Mom. I know Dad was a member of The Left.',

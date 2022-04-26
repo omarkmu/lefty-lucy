@@ -16,12 +16,12 @@ export default class Town extends Level {
             backgroundMusic: 'home/town',
             nextLevel: "mountainpath",
             isCombatLevel: false,
-            playerSpawn: [100, 543],
+            playerSpawn: [100, 550],
             groundColor: 0xb56d3d,
             npcs: [
                 {
                     type: 'rebel',
-                    spawn: [700, 525],
+                    spawn: [700, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Resistance Member: Girl, I\'d stay away from me if I were you. I\'m someone you don\'t want to know.',
@@ -41,7 +41,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilian',
-                    spawn: [200, 543],
+                    spawn: [200, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! How\'re you?',
@@ -50,7 +50,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianblue',
-                    spawn: [350, 543],
+                    spawn: [350, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Wonderful weather we\'re having.',
@@ -59,7 +59,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianpurple',
-                    spawn: [500, 543],
+                    spawn: [500, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Looking for anything?',
@@ -68,7 +68,7 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civiliangreen',
-                    spawn: [600, 543],
+                    spawn: [600, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: What is it? Someone stole your sweet roll?',

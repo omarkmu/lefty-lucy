@@ -16,7 +16,7 @@ export default class Cave extends Level {
             npcs: [
                 {
                     type: 'rebelleader',
-                    spawn: [700, 543],
+                    spawn: [700, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Resistance Leader: Hello there. You must be Lucy. Our friend has already filled me in.',
@@ -34,7 +34,7 @@ export default class Cave extends Level {
                 },
                 {
                     type: 'rebel',
-                    spawn: [200, 543],
+                    spawn: [200, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Rebel: Hello. You must be his daughter. You look like him.',
@@ -43,7 +43,7 @@ export default class Cave extends Level {
                 },
                 {
                     type: 'rebel',
-                    spawn: [350, 543],
+                    spawn: [350, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Rebel: The Right will never find us here. We\'re hidden here.',
@@ -52,7 +52,7 @@ export default class Cave extends Level {
                 },
                 {
                     type: 'rebel',
-                    spawn: [500, 543],
+                    spawn: [500, 550],
                     interactDistance: 25,
                     interactDialogue: [
                         'Rebel: You must be the new girl? Younger than I imagined.',
