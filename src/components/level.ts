@@ -1,15 +1,16 @@
 // Authors: Omar Muhammad
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
-import { EnemyDefinition } from '../constants'
-import { level_1, level_2, level_3} from '../constants'
+import { textChangeRangeIsUnchanged } from 'typescript'
+import { CANVAS_HEIGHT, EnemyDefinition } from '../constants'
+import { level_1, level_2, level_3 } from '../constants'
 import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Enemy from './enemy'
 import Player from './player'
 import UI from './ui'
 
 
-const ZONE_SIZE_DEFAULT = 50
+const ZONE_SIZE_DEFAULT = 32
 const LEVEL_COMPLETE_DIALOGUE = [
     'Level complete. Press Enter to continue.'
 ]
@@ -42,7 +43,7 @@ export default class Level extends Phaser.Scene {
     player: Player
     enemies: Enemy[]
     ui: UI
-    
+
 
     constructor(private _options: SceneOptions) {
         super(_options.name)
@@ -59,6 +60,11 @@ export default class Level extends Phaser.Scene {
         // initialize background
         this.background = this.add.image(0, 0, this._options.background)
         this.background.setOrigin(0)
+        if (this.background.height < CANVAS_HEIGHT) {
+            // Borrowed code from https://www.vishalon.net/blog/phaser3-stretch-background-image-to-cover-canvas
+            this.background.displayWidth = this.sys.canvas.width;
+            this.background.displayHeight = this.sys.canvas.height;
+        }
 
         // initialize camera and physics bounds
         this.cameras.main.setBounds(0, 0, this.background.width, this.background.height)
@@ -73,13 +79,13 @@ export default class Level extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup()
 
         this.addPlatform(0, 575, this.background.width, 1) // ground platform
-        for (let i = 0; i < level_2.length; i++) {
-            const [x, y] = level_2[i]
-            this.addPlatform(x, y, 278, 46, 'platform')
+        for (let i = 0; i < level_1.length; i++) {
+            const [x, y] = level_1[i]
+            this.addPlatform(x * 2, y * 2, 278, 46, 'platform')
         }
-        for (let i = 0; i < level_2_s.length; i++) {
-            const [x, y] = level_2_s[i]
-            this.addPlatform(x, y, 15, 70, 'sideways')
+        for (let i = 0; i < level_1_s.length; i++) {
+            const [x, y] = level_1_s[i]
+            this.addPlatform(x * 2, y * 2, 15, 70, 'sideways')
         }
 
         // initialize zones
@@ -120,7 +126,7 @@ export default class Level extends Phaser.Scene {
         })
 
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
-        
+
         this.physics.add.collider(this.player.sprite, this.platforms)
         this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zone: any) => {
             this.zoneCallbacks[zone.zoneID]?.()

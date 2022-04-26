@@ -67,7 +67,13 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.image('heart', 'assets/heart.png')
 
         // level assets
-        this.load.image('bg', 'assets/scrolltest.png')
+        this.load.image('bg', 'assets/forest_background.png')
+        this.load.image('home', 'assets/lucyhousebackground2.png')
+        this.load.image('forestpath', 'assets/forest_background.png')
+        this.load.image('town', 'assets/town_background.png')
+        this.load.image('mountainpath', 'assets/mountain_background.png')
+        this.load.image('cave', 'assets/cave_background.png')
+        this.load.image('cavepath', 'assets/innercave.png')
         this.load.image('platform', 'assets/5.png')
         this.load.image('sideways', 'assets/sideways.png')
 
