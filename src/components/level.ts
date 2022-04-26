@@ -220,7 +220,6 @@ export default class Level extends Phaser.Scene {
     nextLevel() {
         this.music?.pause()
         this.scene.start(this._options.nextLevel ?? 'main-menu')
-        console.log(this._options.name, this._options.nextLevel)
     }
 
     resetLevel() {
