@@ -23,6 +23,7 @@ const FIREBALL_VELOCITY = 200
 const FIREBALL_DESTROY_DELAY = 2000
 const FIREBALL_DAMAGE = 5
 
+
 /**
  * Keeps track of player information and manages input.
  * This is not just the player sprite; see the sprite property.
@@ -72,7 +73,7 @@ export default class Player {
         }
 
         if (value < this._lives) {
-            // TODO: hurt sound effect
+                  // TODO: hurt sound effect
         } else {
             // TODO: (maybe) heal sound effect
         }
