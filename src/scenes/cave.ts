@@ -8,6 +8,7 @@ export default class Cave extends Level {
         super({
             name: 'cave',
             background: 'cave',
+            backgroundMusic: 'lvl3',
             nextLevel: "cavepath",
             isCombatLevel: false,
             playerSpawn: [100, 525],

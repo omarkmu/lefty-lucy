@@ -1,7 +1,6 @@
 // Authors: Eric Burch
 
 import Level from '../components/level'
-import ForestPath from './forestpath'
 
 // This should represent a single level of the game
 export default class Home extends Level {

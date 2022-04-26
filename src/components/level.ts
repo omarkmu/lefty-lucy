@@ -1,6 +1,7 @@
 // Authors: Omar Muhammad
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
+import { MouseConstraint } from 'matter'
 import { textChangeRangeIsUnchanged } from 'typescript'
 import { CANVAS_HEIGHT, EnemyDefinition } from '../constants'
 import { level_1, level_2, level_3 } from '../constants'
@@ -43,6 +44,7 @@ export default class Level extends Phaser.Scene {
     player: Player
     enemies: Enemy[]
     ui: UI
+    music: any
 
 
     constructor(private _options: SceneOptions) {
@@ -60,12 +62,23 @@ export default class Level extends Phaser.Scene {
         // initialize background
         this.background = this.add.image(0, 0, this._options.background)
         this.background.setOrigin(0)
+
         if (this.background.height < CANVAS_HEIGHT) {
             // Borrowed code from https://www.vishalon.net/blog/phaser3-stretch-background-image-to-cover-canvas
             this.background.displayWidth = this.sys.canvas.width;
             this.background.displayHeight = this.sys.canvas.height;
             this.background.width = this.sys.canvas.width;
             this.background.height = this.sys.canvas.height;
+        }
+
+        //music
+        if (this._options.backgroundMusic) {
+            this.music = this.sound.add(this._options.backgroundMusic, {
+                volume: 0.5,
+                loop: true
+
+            })
+            this.music.play()
         }
 
         // initialize camera and physics bounds
@@ -194,6 +207,7 @@ export default class Level extends Phaser.Scene {
     }
 
     nextLevel() {
+        this.music?.pause()
         this.scene.start(this._options.nextLevel ?? 'main-menu')
         console.log(this._options.name, this._options.nextLevel)
     }
@@ -227,6 +241,10 @@ interface SceneOptions {
      * The key (provided to load.image) of the background image for this scene.
      */
     background: string
+    /**
+     * The key (provided to load.audio) of the background music for this scene.
+     */
+    backgroundMusic?: string
     /**
      * The name of the next level to load after this level is completed.
      * Returns to the main menu if no next level is specified.
