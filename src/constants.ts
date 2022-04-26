@@ -21,9 +21,15 @@ export interface Keys extends Omit<Phaser.Types.Input.Keyboard.CursorKeys, 'shif
 
 export interface EnemyDefinition {
     /**
+     * Enemy type.
+     * Default: 'enemy' for normal enemy.
+     */
+    type?: 'enemy' | 'boss'
+    /**
      * The [X, Y] location of the enemy spawn.
      */
     spawn: [number, number]
+    initialDirection?: Direction
     attackRange?: number
     attackDamage?: number
     attackDelay?: number

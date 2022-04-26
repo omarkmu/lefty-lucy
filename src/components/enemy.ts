@@ -23,12 +23,36 @@ const enum AIMode {
     Pursue,
 }
 
+const DEFAULTS = {
+    enemy: {
+        health: 6,
+        hearingRange: 115,
+        visionRange: 350,
+        attackRange: 40,
+        attackDamage: 1,
+        attackDelay: 1000,
+
+    },
+    boss: {
+        health: 12,
+        hearingRange: 115,
+        visionRange: 350,
+        attackRange: 40,
+        attackDamage: 2,
+        attackDelay: 800,
+
+    }
+}
+
 export default class Enemy {
+    type: 'enemy' | 'boss'
+    lastDirection: Direction
+
     hearingRange: number
     visionRange: number
     spawn: SpawnLocation
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
-    
+
     health: number
     initialDirection: Direction
     currentPlatform: Phaser.Types.Physics.Arcade.GameObjectWithBody
@@ -57,22 +81,24 @@ export default class Enemy {
             y: def.spawn[1]
         }
 
-        this.health = def.health ?? 6
-        this.hearingRange = def.hearingRange ?? 115
-        this.visionRange = def.visionRange ?? 350
-        this.attackRange = def.attackRange ?? 40
-        this.attackDamage = def.attackDamage ?? 1
-        this.attackDelay = def.attackDelay ?? 1000
+        this.type = def.type ?? 'enemy'
+        this.health = def.health ?? DEFAULTS[this.type].health
+        this.hearingRange = def.hearingRange ?? DEFAULTS[this.type].hearingRange
+        this.visionRange = def.visionRange ?? DEFAULTS[this.type].visionRange
+        this.attackRange = def.attackRange ?? DEFAULTS[this.type].attackRange
+        this.attackDamage = def.attackDamage ?? DEFAULTS[this.type].attackDamage
+        this.attackDelay = def.attackDelay ?? DEFAULTS[this.type].attackDelay
         this.minX = def.patrolRange?.[0]
         this.maxX = def.patrolRange?.[1]
 
         const isPatrolEnabled = def.disablePatrol !== true
         this.currentMode = this.defaultMode = isPatrolEnabled ? AIMode.Patrol : AIMode.Stationary
 
-        this.initialDirection = Phaser.Math.Between(1, 2) === 1
+        this.initialDirection = def.initialDirection ?? Phaser.Math.Between(1, 2) === 1
             ? Direction.Left
             : Direction.Right
-        
+        this.lastDirection = this.initialDirection
+
         this.create()
     }
 
@@ -81,7 +107,7 @@ export default class Enemy {
     get isDead() { return this.health <= 0 }
 
     create() {
-        const sprite = this.scene.enemyGroup.create(this.spawn.x, this.spawn.y, 'dude')
+        const sprite = this.scene.enemyGroup.create(this.spawn.x, this.spawn.y, 'lucy_walk')
             .setCollideWorldBounds(true)
 
         sprite.owner = this
@@ -95,12 +121,15 @@ export default class Enemy {
         this.tryCombat()
         this.tryPatrol()
 
-        if (this.sprite.body.velocity.x > 0) {
-            this.sprite.anims.play('dude_right', true)
-        } else if (this.sprite.body.velocity.x < 0) {
-            this.sprite.anims.play('dude_left', true)
-        } else {
-            this.sprite.anims.play('dude_turn')
+        if (this.sprite.body.velocity.x < 0) {
+            this.lastDirection = Direction.Left
+            this.sprite.anims.play(`${this.type}_walk_left`, true)
+        } else if (this.sprite.body.velocity.x > 0) {
+            this.lastDirection = Direction.Right
+            this.sprite.anims.play(`${this.type}_walk_right`, true)
+        } else if (this.scene.time.now - this.lastAttack > this.attackDelay) {
+            const direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+            this.sprite.anims.play(`${this.type}_stand_${direction}`, true)
         }
     }
 
@@ -153,6 +182,9 @@ export default class Enemy {
         if (now - this.lastAttack >= this.attackDelay) {
             this.lastAttack = now
             this.scene.player.applyDamage(this.attackDamage)
+
+            const direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+            this.sprite.anims.play(`${this.type}_punch_${direction}`)
             this.sprite.setVelocityX(0)
         }
     }
