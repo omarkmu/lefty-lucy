@@ -28,9 +28,38 @@ export default class Town extends Level {
                         'Lucy: Thank you. You don\'t know how much this means to me.',
                         'Resistance Member: You won\'t be thanking me later. The path to the resistance is a tough one. Just follow me and keep quiet.',
                         '*Lucy follows the Resistance Member to the edge of town.*',
+                        'Resistance Member: Before you leave, I should tell you of your powers. Have you ever noticed that you have strange occurences around you? These are your left handed powers.',
+                        'Lucy:Now that you mention it, I have...',
+                        'Resistance Member: If you concentrate hard enough, you\'ll be able to control them. Concentrate the power in your palm and shoot it out.',
+                        ['Lucy: Okay...', '*Lucy does as the man describes, she is surprised to see a glow coming from her palm. A ball of fire then emerges from her hand.*'],
+                        'Resistance Member: Good, you do have the power. It\'s time for you to go now.',
                         'Resistance Member: The Hideout is this way. If you follow this path to the mountain, you\'ll come across a cave. You\'ll find your answers there.'
                     ],
                     interactCallback: () => this.nextLevel()
+                },
+                {
+                    type: 'civilian',
+                    spawn: [200, 525],
+                    interactDialogue: [
+                        'Townsfolk: Hello there! How\'re you?',
+                        'Lucy: Hello, I\'m good, thanks.'
+                    ]
+                },
+                {
+                    type: 'civilianblue',
+                    spawn: [275, 525],
+                    interactDialogue: [
+                        'Townsfolk: Hello there! Wonderful weather we\'re having.',
+                        'Lucy: Hello, it is isn\'t it.'
+                    ]
+                },
+                {
+                    type: 'civilianpurple',
+                    spawn: [325, 525],
+                    interactDialogue: [
+                        'Townsfolk: Hello there! Looking for anything?',
+                        'Lucy: Hello. I\'m just looking around. Thanks.'
+                    ]
                 }
             ]
         })
