@@ -73,15 +73,15 @@ export default class Level extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup()
 
         this.addPlatform(0, 575, this.background.width, 1) // ground platform
-        for (let i = 0; i < level_1.length; i++) {
-            const [x, y] = level_1[i]
+        for (let i = 0; i < level_3.length; i++) {
+            const [x, y] = level_3[i]
             //this.addPlatform(x*2+40, y*2+20, 278, 46, 'platform')
-            var rect = this.add.rectangle(x*2, y*2, 80, 18, 0x000000)
+            var rect = this.add.rectangle(x, y, 80, 18, 0x000000)
         }
-        for (let i = 0; i < level_1_s.length; i++) {
-            const [x, y] = level_1_s[i]
+        for (let i = 0; i < level_3_s.length; i++) {
+            const [x, y] = level_3_s[i]
             //this.addPlatform(x*2, y*2+50, 15, 70, 'sideways')
-            var rect = this.add.rectangle(2*x-40, 2*y+50, 18, 90, 0x000000)
+            var rect = this.add.rectangle(x-30, y+40, 18, 90, 0x000000)
         }
 
         // initialize zones
