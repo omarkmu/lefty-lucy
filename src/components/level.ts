@@ -75,7 +75,7 @@ export default class Level extends Phaser.Scene {
         //music
         if (this._options.backgroundMusic) {
             this.music = this.sound.add(this._options.backgroundMusic, {
-                volume: 0.5,
+                volume: 0.25,
                 loop: true
 
             })
@@ -103,7 +103,7 @@ export default class Level extends Phaser.Scene {
         for (let i = 0; i < level_3_s.length; i++) {
             const [x, y] = level_3_s[i]
             //this.addPlatform(x*2, y*2+50, 15, 70, 'sideways')
-            var rect = this.add.rectangle(x-30, y+40, 18, 90, 0x000000)
+            var rect = this.add.rectangle(x - 30, y + 40, 18, 90, 0x000000)
         }
 
         // initialize zones

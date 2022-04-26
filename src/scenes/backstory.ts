@@ -17,6 +17,7 @@ export default class Backstory extends Level {
         super({
             name: 'backstory',
             background: 'backstory',
+            backgroundMusic: 'home/town',
             nextLevel: "home",
             isCombatLevel: false,
             playerSpawn: [100, 525],
