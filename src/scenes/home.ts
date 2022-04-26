@@ -11,6 +11,9 @@ export default class Home extends Level {
             nextLevel: "forestpath",
             isCombatLevel: false,
             playerSpawn: [100, 525],
+            groundY: 540,
+            groundSize: 65,
+            groundColor: 0x865322,
             npcs: [
                 {
                     type: 'mom',

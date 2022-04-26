@@ -11,8 +11,9 @@ export default class Cave extends Level {
             backgroundMusic: 'lvl3',
             nextLevel: "cavepath",
             isCombatLevel: false,
+            groundColor: 0x844e35,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
+            winZone: [100, 525]
         })
     }
 }
