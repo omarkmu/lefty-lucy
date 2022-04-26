@@ -85,6 +85,7 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.audio('lvl3', 'assets/creepy_bugs.mp3')
         this.load.audio('lvl2', 'assets/something_adventerous.wav')
         this.load.audio('lvl', 'assets/sound.mp3')
+        this.load.audio('sword', 'assets/sword.wav')
 
         // player assets
         this.load.image('fireball', 'assets/fireballpix.png')
