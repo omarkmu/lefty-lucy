@@ -42,7 +42,6 @@ export default class CavePath extends Level {
 
     update() {
         super.update()
-
         // check for boss defeat
         if (this.enemies[0]?.isDead && !this.defeatedBoss) {
             this.defeatedBoss = true
