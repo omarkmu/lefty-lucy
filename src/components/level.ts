@@ -2,8 +2,6 @@
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
 import { CANVAS_HEIGHT, EnemyDefinition } from '../constants'
-import { level_1, level_2, level_3 } from '../constants'
-import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Enemy from './enemy'
 import NPC, { NPCDefinition } from './npc'
 import Player from './player'
@@ -87,23 +85,24 @@ export default class Level extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.background.width, this.background.height)
 
         // initialize platforms
-        // TODO: platforms should be supplied via the options,
-        // specified as an array of objects (or otherwise) for code reusability.
-        // keeping it as is for now since the platform creation code may be improved soon
         // creates platform design for each level
-        // takes a string thats located in constants.ts
+        const defaultPlatformColor = this._options.platformDefaultColor ?? 0x000000
         this.platforms = this.physics.add.staticGroup()
 
-        this.addPlatform(0, 575, this.background.width, 1) // ground platform
-        for (let i = 0; i < level_3.length; i++) {
-            const [x, y] = level_3[i]
-            //this.addPlatform(x*2+40, y*2+20, 278, 46, 'platform')
-            var rect = this.add.rectangle(x, y, 80, 18, 0x000000)
-        }
-        for (let i = 0; i < level_3_s.length; i++) {
-            const [x, y] = level_3_s[i]
-            //this.addPlatform(x*2, y*2+50, 15, 70, 'sideways')
-            var rect = this.add.rectangle(x - 30, y + 40, 18, 90, 0x000000)
+        // ground platform
+        const groundPos = this._options.groundY ?? 575
+        const groundColor = this._options.groundColor ?? defaultPlatformColor
+        const groundHeight = this._options.groundSize ?? 50
+        this.addPlatform(0, groundPos, this.background.width, groundHeight, groundColor)
+            .setOrigin(0)
+
+        if (this._options.platforms) {
+            for (const arr of this._options.platforms) {
+                const w = arr[2] ?? 80 // default width
+                const h = arr[3] ?? 18 // default height
+                const color = arr[4] ?? defaultPlatformColor
+                this.addPlatform(arr[0], arr[1], w, h, color)
+            }
         }
 
         // initialize zones
@@ -228,16 +227,11 @@ export default class Level extends Phaser.Scene {
         this.scene.start(this._options.name)
     }
 
-    addPlatform(x: number, y: number, width: number, height: number, img?: string) {
-        const sprite = this.platforms.create(
-            x, y,
-            img ?? undefined, undefined,
-            img !== undefined)
+    addPlatform(x: number, y: number, width: number, height: number, color: number) {
+        const rect = this.add.rectangle(x, y, width, height, color)
+        this.platforms.add(rect)
 
-        sprite.enableBody()
-        if (img === undefined) {
-            sprite.setSize(width, height, 0)
-        }
+        return rect
     }
 }
 
@@ -274,6 +268,29 @@ interface SceneOptions {
      * The spawn location of the player. Specified as [X, Y].
      */
     playerSpawn?: [number, number]
+    /**
+     * Platforms. Specified as [X, Y], [X, Y, WH], or [X, Y, W, H, Color].
+     */
+    platforms?: number[][]
+    /**
+     * Color of the ground platform.
+     */
+    groundColor?: number
+    /**
+     * Position of the ground platform.
+     * Defaults to 575.
+     */
+    groundY?: number
+    /**
+     * Size of the ground platform.
+     * Defaults to 575.
+     */
+    groundSize?: number
+    /**
+     * Platform color default, for when a platform color isn't specified.
+     * Defaults to black.
+     */
+    platformDefaultColor?: number
     /**
      * Whether the fireball attack is enabled in this level.
      * Default: false.
