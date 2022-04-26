@@ -15,9 +15,11 @@ export default class CavePath extends Level {
             nextLevel: 'victory',
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
+            winZone: [700, 525],
             platformDefaultColor: 0x111111,
             groundColor: 0xb13e53,
+            playerFireballEnabled: true,
+            playerSwordEnabled: true,
             enemies: Level.generateEnemies([
                 [500, 400],
                 [1000, 525]

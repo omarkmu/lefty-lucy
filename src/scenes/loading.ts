@@ -91,6 +91,7 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.audio('heal', 'assets/heal.mp3')
         this.load.audio('punch', 'assets/punch.mp3')
         this.load.audio('swoosh', 'assets/swoosh.mp3')
+        this.load.audio('home/town', 'assets/kind_of_soothing_kind_of.mp3')
 
         // player assets
         this.load.image('fireball', 'assets/fireballpix.png')
@@ -150,6 +151,9 @@ export default class LoadingScreen extends Phaser.Scene {
         // npc assets
         this.load.image('mom_stand', 'assets/lucymomfront.png')
         this.load.image('civilian_stand', 'assets/townsperson.png')
+        this.load.image('civilianblue_stand', 'assets/townspersonblue.png')
+        this.load.image('civiliangreen_stand', 'assets/townspersongreen.png')
+        this.load.image('civilianpurple_stand', 'assets/townspersonpurple.png')
         this.load.image('guerrilla_stand', 'assets/resistance.png')
     }
 
