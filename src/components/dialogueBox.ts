@@ -79,6 +79,8 @@ export default class DialogueBox {
             }
         })
 
+        text.setLineSpacing(5)
+
         this.text = text
         this.animateProgress = this.initialProgress
         this.animating = true
