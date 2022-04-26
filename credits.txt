@@ -1,0 +1,14 @@
+Code:
+esbuild.config.js: adapted from Obsidian plugin template - https://github.com/obsidianmd/obsidian-sample-plugin
+components/dialogueBox.ts: Based on code from https://gamedevacademy.org/create-a-dialog-modal-plugin-in-phaser-3-part-1
+components/level.ts: Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game, Borrowed code from https://www.vishalon.net/blog/phaser3-stretch-background-image-to-cover-canvas
+components/player.ts: Camera code from https://github.com/photonstorm/phaser3-examples/blob/master/public/src/camera/follow%20zoom%20tilemap.js
+components/player.ts: Determine click location relative to player source: https://stevenklambert.com/writing/phaser-3-game-object-position-relative-camera
+scenes/loading.ts: Adapted from https://gamedevacademy.org/creating-a-preloading-screen-in-phaser-3
+scenes/menu.ts: code used from https://blog.ourcade.co/posts/2020/phaser-3-ui-menu-selection-cursor-selector/
+
+
+Assets:
+glassPanel and cursor_pointerFlat_shadow from https://kenney.nl/assets/ui-pack-space-expansion
+Other sounds by Sam Repasky
+Other images by Sanjana Bhat
