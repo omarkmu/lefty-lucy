@@ -14,13 +14,13 @@ export default class ForestPath extends Level {
             backgroundMusic: 'lvl1',
             nextLevel: "town",
             isCombatLevel: true,
-            playerSpawn: [100, 525],
-            winZone: [767.9999999999967, 26],
+            playerSpawn: [100, 555],
+            winZone: [767.9999999999967, 40],
             platformDefaultColor: 0x304b22,
             enemies: Level.generateEnemies([
                 [646, 455],
                 [1000, 525],
-                [298,151]
+                [298, 151]
             ]),
             platforms: [
                 ...level_1,
