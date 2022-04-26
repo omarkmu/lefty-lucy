@@ -145,6 +145,9 @@ export default class LoadingScreen extends Phaser.Scene {
         // npc assets
         this.load.image('mom_stand', 'assets/lucymomfront.png')
         this.load.image('civilian_stand', 'assets/townsperson.png')
+        this.load.image('civilianblue_stand', 'assets/townspersonblue.png')
+        this.load.image('civiliangreen_stand', 'assets/townspersongreen.png')
+        this.load.image('civilianpurple_stand', 'assets/townspersonpurple.png')
         this.load.image('guerrilla_stand', 'assets/resistance.png')
     }
 
