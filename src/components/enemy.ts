@@ -107,7 +107,8 @@ export default class Enemy {
     get isDead() { return this.health <= 0 }
 
     create() {
-        const sprite = this.scene.enemyGroup.create(this.spawn.x, this.spawn.y, 'lucy_walk')
+        const direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+        const sprite = this.scene.enemyGroup.create(this.spawn.x, this.spawn.y, `${this.type}_walk`)
             .setCollideWorldBounds(true)
 
         sprite.owner = this
