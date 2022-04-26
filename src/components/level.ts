@@ -223,6 +223,7 @@ export default class Level extends Phaser.Scene {
     }
 
     resetLevel() {
+        this.music?.pause()
         this.scene.start(this._options.name)
     }
 
