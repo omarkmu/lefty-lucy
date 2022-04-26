@@ -5,7 +5,6 @@ export default class Victory extends Phaser.Scene {
 
     create() {
         this.add.image(0, 0, 'victory').setOrigin(0)
-        this.add.text(275, 200, "You Win!", { font: "42px" })
         this.add.text(200, 250, "Thanks for Playing!", { font: "42px" })
     }
 }
