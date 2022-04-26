@@ -20,6 +20,7 @@ new Phaser.Game({
     type: Phaser.AUTO,
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
+    parent: 'game-container',
     scene: [
         LoadingScreen,
         MainMenuScene,

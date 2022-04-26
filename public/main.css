@@ -1,4 +1,16 @@
+body {
+    background-color: black;
+    color: white;
+}
+
+
 canvas {
     display: block;
     margin: auto;
+}
+
+div.controls {
+    margin: auto;
+    text-align: center;
+    margin-top: 20px;
 }
