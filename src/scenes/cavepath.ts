@@ -16,6 +16,8 @@ const Backstory1 = [
 
 // This should represent a single level of the game
 export default class CavePath extends Level {
+    defeatedBoss: boolean = false
+
     constructor() {
         super({
             name: 'cavepath',
@@ -42,7 +44,8 @@ export default class CavePath extends Level {
         super.update()
 
         // check for boss defeat
-        if (this.enemies[0]?.isDead) {
+        if (this.enemies[0]?.isDead && !this.defeatedBoss) {
+            this.defeatedBoss = true
             this.ui.dialogue.show(Backstory1, () => this.nextLevel())
         }
     }
