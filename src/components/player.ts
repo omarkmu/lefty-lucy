@@ -70,7 +70,6 @@ export default class Player {
         }
 
         this.create()
-        console.log(this)
     }
 
     get x() { return this.sprite.body.x }
