@@ -10,7 +10,7 @@ const INVINCIBILITY_DELAY = 100
 const X_VELOCITY = 160
 const Y_VELOCITY = 200
 
-const MELEE_COOLDOWN = 100
+const MELEE_COOLDOWN = 500
 const MELEE_RANGE = 50
 const MELEE_DAMAGE = 2
 
@@ -18,7 +18,7 @@ const SWORD_COOLDOWN = 200
 const SWORD_RANGE = 100
 const SWORD_DAMAGE = 6
 
-const FIREBALL_COOLDOWN = 600
+const FIREBALL_COOLDOWN = 550
 const FIREBALL_VELOCITY = 200
 const FIREBALL_DESTROY_DELAY = 2000
 const FIREBALL_DAMAGE = 5
@@ -28,6 +28,8 @@ const FIREBALL_DAMAGE = 5
  * This is not just the player sprite; see the sprite property.
  */
 export default class Player {
+    lastDirection: Direction
+
     _lives: number = 3 // remaining lives
     isInvincible: boolean = false
 
@@ -89,7 +91,9 @@ export default class Player {
      * Initializes the player sprite and animations.
      */
     create() {
-        const sprite: any = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'dude')
+        this.lastDirection = Direction.Right
+
+        const sprite: any = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'lucy_walk')
             .setCollideWorldBounds(true)
 
         sprite.owner = this
@@ -105,26 +109,6 @@ export default class Player {
             enter: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
         }
 
-        // initialize animations
-        const prefix = 'dude'
-        this.scene.anims.create({
-            key: `${prefix}_left`,
-            frames: this.scene.anims.generateFrameNumbers(prefix, { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        })
-        this.scene.anims.create({
-            key: `${prefix}_turn`,
-            frames: [ { key: prefix, frame: 4 } ],
-            frameRate: 20
-        })
-        this.scene.anims.create({
-            key: `${prefix}_right`,
-            frames: this.scene.anims.generateFrameNumbers(prefix, { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        })
-
         // disable attacking in non-combat levels
         if (!this.scene.isCombatLevel) return
 
@@ -137,6 +121,12 @@ export default class Player {
 
             // if the attack is on cooldown, ignore
             if (this.attackCooldownState[button]) return
+
+            // disallow punching while jumping
+            if (button === 0 && this.sprite.body.velocity.y !== 0) return
+
+            // disallow fireball on non-fireball enabled levels
+            if (button === 1 && !this.isFireballEnabled) return
 
             // set the attack to be triggered on the next update
             this.attackTrigger[button] = true
@@ -159,7 +149,15 @@ export default class Player {
         // allow UI to capture input
         if (this.scene.ui.handleInput(this.keys)) return
 
-        const velMultiplier = this.keys.left.isDown ? -1 : (this.keys.right.isDown ? 1 : 0)
+        let velMultiplier = 0
+        if (this.keys.left.isDown) {
+            this.lastDirection = Direction.Left
+            velMultiplier = -1
+        } else if (this.keys.right.isDown) {
+            this.lastDirection = Direction.Right
+            velMultiplier = 1
+        }
+
         this.sprite.setVelocityX(X_VELOCITY * velMultiplier)
 
         const jumpRequested = keyJustDown(this.keys.up) || keyJustDown(this.keys.space)
@@ -167,26 +165,39 @@ export default class Player {
             this.sprite.setVelocityY(-Y_VELOCITY)
         }
 
-        if (velMultiplier < 0) {
-            this.sprite.anims.play('dude_left', true)
+        let direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+        const swordModifier = this.isSwordEnabled ? 'sword_' : ''
+        if (!this.sprite.body.touching.down) {
+            this.sprite.anims.play(`lucy_jump_${swordModifier}${direction}`, true)
+        } else if (velMultiplier < 0) {
+            this.lastDirection = Direction.Left
+            this.sprite.anims.play(`lucy_walk_${swordModifier}left`, true)
         } else if (velMultiplier > 0) {
-            this.sprite.anims.play('dude_right', true)
-        } else {
-            this.sprite.anims.play('dude_turn')
+            this.lastDirection = Direction.Right
+            this.sprite.anims.play(`lucy_walk_${swordModifier}right`, true)
+        } else if (!this.attackCooldownState[0] && !this.attackCooldownState[1]) {
+            this.sprite.anims.play(`lucy_stand_${swordModifier}${direction}`, true)
         }
 
         // TODO: animation & sound effects
 
         // melee
         if (this.attackTrigger[0]) {
+            const meleeType = this.isSwordEnabled ? 'sword' : 'punch'
+
             this.attackTrigger[0] = false
-            this.tryPunch()
+            this.lastDirection = this.tryPunch()
+
+            direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+            this.sprite.anims.play(`lucy_${meleeType}_${direction}`, true)
         }
 
         // fireball
-        if (this.attackTrigger[1] && this.isFireballEnabled) {
+        if (this.attackTrigger[1]) {
             this.attackTrigger[1] = false
-            this.createFireball()
+            this.lastDirection = this.createFireball()
+            direction = this.lastDirection === Direction.Left ? 'left' : 'right'
+            this.sprite.anims.play(`lucy_jump_${direction}`, true)
         }
     }
 
@@ -221,10 +232,11 @@ export default class Player {
         validTargets.sort((a, b) => b.playerDistance - a.playerDistance)
 
         const target = validTargets.pop()
-        if (!target) return
+        if (!target) return direction
 
         target.applyDamage(this.isSwordEnabled ? SWORD_DAMAGE : MELEE_DAMAGE)
         target.alert()
+        return direction
     }
 
     createFireball() {
@@ -242,6 +254,8 @@ export default class Player {
             delay: FIREBALL_DESTROY_DELAY,
             callback: () => fireball.destroy()
         })
+
+        return direction
     }
 
     applyDamage(lives: number) {
