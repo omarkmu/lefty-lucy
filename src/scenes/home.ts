@@ -11,7 +11,19 @@ export default class Home extends Level {
             nextLevel: "forestpath",
             isCombatLevel: false,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
+            npcs: [
+                {
+                    type: 'mom',
+                    spawn: [150, 525],
+                    interactDialogue: [
+                        'Mom: lucy its not what you think',
+                        'Lucy: i found the notebook mom. i know dad was a gamer',
+                        'Mom: dont speak of him that way lucy. you know that being a gamer is banned in our society',
+                        ['Lucy: mom...', ' im a gamer'],
+                    ],
+                    interactCallback: () => this.nextLevel()
+                }
+            ]
         })
     }
 }

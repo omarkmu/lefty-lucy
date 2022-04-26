@@ -1,12 +1,11 @@
 // Authors: Omar Muhammad
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
-import { MouseConstraint } from 'matter'
-import { textChangeRangeIsUnchanged } from 'typescript'
 import { CANVAS_HEIGHT, EnemyDefinition } from '../constants'
 import { level_1, level_2, level_3 } from '../constants'
 import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Enemy from './enemy'
+import NPC, { NPCDefinition } from './npc'
 import Player from './player'
 import UI from './ui'
 
@@ -38,11 +37,13 @@ export default class Level extends Phaser.Scene {
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group
+    npcGroup: Phaser.Physics.Arcade.Group
     enemyGroup: Phaser.Physics.Arcade.Group
     zoneGroup: Phaser.Physics.Arcade.StaticGroup
     zoneCallbacks: Record<string, () => void>
     player: Player
     enemies: Enemy[]
+    npcs: NPC[]
     ui: UI
     music: any
 
@@ -112,7 +113,12 @@ export default class Level extends Phaser.Scene {
         }
 
         this.enemyGroup = this.physics.add.group()
+        this.npcGroup = this.physics.add.group()
         this.playerProjectiles = this.physics.add.group()
+
+        // initialize npcs
+        this.npcs = (this._options.npcs ?? []).map(def => new NPC(this, def))
+        this.physics.add.collider(this.npcGroup, this.platforms)
 
         // initialize enemies
         this.enemies = (this._options.enemies ?? []).map(def => new Enemy(this, def))
@@ -133,11 +139,12 @@ export default class Level extends Phaser.Scene {
         // initialize player
         this.player = new Player(this, {
             spawn: {
-                x: this._options.playerSpawn[0],
-                y: this._options.playerSpawn[1],
+                x: this._options.playerSpawn?.[0] ?? 0,
+                y: this._options.playerSpawn?.[1] ?? 0,
             },
             isFireballEnabled: this._options.playerFireballEnabled ?? false,
             isSwordEnabled: this._options.playerSwordEnabled ?? false,
+            visible: this._options.loadPlayer !== false
         })
 
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
@@ -166,6 +173,10 @@ export default class Level extends Phaser.Scene {
         for (const enemy of this.enemies) {
             if (enemy.isDead) continue
             enemy.update()
+        }
+
+        for (const npc of this.npcs) {
+            npc.update()
         }
 
         this.player.update()
@@ -255,9 +266,13 @@ interface SceneOptions {
      */
     isCombatLevel?: boolean
     /**
+     * Set to false to not load the player.
+     */
+    loadPlayer?: false
+    /**
      * The spawn location of the player. Specified as [X, Y].
      */
-    playerSpawn: [number, number]
+    playerSpawn?: [number, number]
     /**
      * Whether the fireball attack is enabled in this level.
      * Default: false.
@@ -272,6 +287,10 @@ interface SceneOptions {
      * Information about enemies which should be spawned.
      */
     enemies?: EnemyDefinition[]
+    /**
+     * NPC definitions
+     */
+    npcs?: NPCDefinition[]
     /**
      * A zone that describes the target area the player must enter to pass the level.
      * Specified as [X, Y] for default width/height, [X, Y, W] for height = W,

@@ -20,16 +20,10 @@ export default class MainMenuScene extends Phaser.Scene {
         }
     }
 
-    preload() {
-        this.load.image('glass-panel', 'assets/glassPanel.png')
-        this.load.image('cursor_pointerFlat_shadow', 'assets/cursor_pointerFlat_shadow.png')
-    }
-
     create() {
         const { width, height } = this.scale
 
         this.add.image(0, 0, 'menu').setOrigin(0)
-
 
         // Play button
         const playButton = this.add.image(width * 0.5, height * 0.6, 'glass-panel')
