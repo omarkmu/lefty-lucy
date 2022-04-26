@@ -24,6 +24,7 @@ const FIREBALL_DESTROY_DELAY = 2000
 const FIREBALL_DAMAGE = 5
 
 const REGEN_DELAY = 5000
+const IDLE_DELAY = 3500
 
 const MAX_LIVES = 3
 
@@ -37,6 +38,7 @@ export default class Player {
 
     _lives: number = MAX_LIVES // remaining lives
     isInvincible: boolean = false
+    idle: boolean = false
 
     // 0 = melee, 1 = fireball
     attackCooldowns = [MELEE_COOLDOWN, FIREBALL_COOLDOWN]
@@ -50,6 +52,9 @@ export default class Player {
 
     regenEvent: Phaser.Time.TimerEvent
     regenConfig: any
+
+    idleEvent: Phaser.Time.TimerEvent
+    idleConfig: any
 
     spawn: SpawnLocation
     isFireballEnabled: boolean
@@ -65,6 +70,7 @@ export default class Player {
         }
 
         this.create()
+        console.log(this)
     }
 
     get x() { return this.sprite.body.x }
@@ -119,10 +125,18 @@ export default class Player {
             enter: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
         }
 
+        this.idleConfig = {
+            delay: IDLE_DELAY,
+            loop: true,
+            callback: () => this.idle = true
+        }
+
+        this.idleEvent = this.scene.time.addEvent(this.idleConfig)
+        this.scene.input.mouse.disableContextMenu()
+
         // disable attacking in non-combat levels
         if (!this.scene.isCombatLevel) return
 
-        this.scene.input.mouse.disableContextMenu()
         this.scene.input.on('pointerdown', (mouse: any) => {
             if (mouse.button !== 0 && mouse.button !== 2) return
 
@@ -190,15 +204,22 @@ export default class Player {
         let direction = this.lastDirection === Direction.Left ? 'left' : 'right'
         const swordModifier = this.isSwordEnabled ? 'sword_' : ''
         if (!this.sprite.body.touching.down) {
+            this.resetIdle()
             this.sprite.anims.play(`lucy_jump_${swordModifier}${direction}`, true)
         } else if (velMultiplier < 0) {
+            this.resetIdle()
             this.lastDirection = Direction.Left
             this.sprite.anims.play(`lucy_walk_${swordModifier}left`, true)
         } else if (velMultiplier > 0) {
+            this.resetIdle()
             this.lastDirection = Direction.Right
             this.sprite.anims.play(`lucy_walk_${swordModifier}right`, true)
         } else if (!this.attackCooldownState[0] && !this.attackCooldownState[1]) {
-            this.sprite.anims.play(`lucy_stand_${swordModifier}${direction}`, true)
+            if (this.idle) {
+                this.sprite.anims.play('lucy_idle', true)
+            } else {
+                this.sprite.anims.play(`lucy_stand_${swordModifier}${direction}`, true)
+            }
         }
 
         // melee
@@ -210,6 +231,7 @@ export default class Player {
 
             direction = this.lastDirection === Direction.Left ? 'left' : 'right'
             this.sprite.anims.play(`lucy_${meleeType}_${direction}`, true)
+            this.resetIdle()
         }
 
         // fireball
@@ -219,6 +241,7 @@ export default class Player {
             direction = this.lastDirection === Direction.Left ? 'left' : 'right'
             this.sprite.anims.play(`lucy_jump_${direction}`, true)
             this.scene.sound.play('swoosh')
+            this.resetIdle()
         }
 
         // npc interaction
@@ -230,6 +253,11 @@ export default class Player {
                 }
             }
         }
+    }
+
+    resetIdle() {
+        this.idleEvent.reset(this.idleConfig)
+        this.idle = false
     }
 
     determineAttackDirection(attack: 0 | 1) {
