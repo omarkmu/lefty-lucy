@@ -91,6 +91,7 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.audio('heal', 'assets/heal.mp3')
         this.load.audio('punch', 'assets/punch.mp3')
         this.load.audio('swoosh', 'assets/swoosh.mp3')
+        this.load.audio('sword', 'assets/sword.wav')
         this.load.audio('home/town', 'assets/kind_of_soothing_kind_of.mp3')
 
         // player assets

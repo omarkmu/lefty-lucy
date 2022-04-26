@@ -179,7 +179,6 @@ export default class Enemy {
             return
         }
 
-        // TODO: animate, sound effect, and delay to give the player time to dodge
         if (now - this.lastAttack >= this.attackDelay) {
             this.lastAttack = now
             this.scene.player.applyDamage(this.attackDamage)
@@ -212,7 +211,6 @@ export default class Enemy {
     applyDamage(health: number) {
         this.health -= health
 
-        // TODO: sound effects, animation
         if (this.health <= 0) {
             this.sprite.destroy()
         }

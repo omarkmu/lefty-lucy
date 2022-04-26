@@ -23,6 +23,10 @@ const FIREBALL_VELOCITY = 200
 const FIREBALL_DESTROY_DELAY = 2000
 const FIREBALL_DAMAGE = 5
 
+const REGEN_DELAY = 5000
+
+const MAX_LIVES = 3
+
 
 /**
  * Keeps track of player information and manages input.
@@ -31,7 +35,7 @@ const FIREBALL_DAMAGE = 5
 export default class Player {
     lastDirection: Direction
 
-    _lives: number = 3 // remaining lives
+    _lives: number = MAX_LIVES // remaining lives
     isInvincible: boolean = false
 
     // 0 = melee, 1 = fireball
@@ -43,6 +47,9 @@ export default class Player {
 
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody
     keys: Keys
+
+    regenEvent: Phaser.Time.TimerEvent
+    regenConfig: any
 
     spawn: SpawnLocation
     isFireballEnabled: boolean
@@ -73,9 +80,10 @@ export default class Player {
         }
 
         if (value < this._lives) {
-                  // TODO: hurt sound effect
+            this.scene.sound.play('hurt')
+            this.regenEvent.reset(this.regenConfig)
         } else {
-            // TODO: (maybe) heal sound effect
+            this.scene.sound.play('heal')
         }
 
         this._lives = value
@@ -142,6 +150,18 @@ export default class Player {
                 callback: () => this.attackCooldownState[button] = false
             })
         })
+
+        this.regenConfig = {
+            delay: REGEN_DELAY,
+            loop: true,
+            callback: () => {
+                if (this.lives < MAX_LIVES) {
+                    this.lives += 1
+                }
+            }
+        }
+
+        this.regenEvent = this.scene.time.addEvent(this.regenConfig)
     }
 
     /**
@@ -181,8 +201,6 @@ export default class Player {
             this.sprite.anims.play(`lucy_stand_${swordModifier}${direction}`, true)
         }
 
-        // TODO: animation & sound effects
-
         // melee
         if (this.attackTrigger[0]) {
             const meleeType = this.isSwordEnabled ? 'sword' : 'punch'
@@ -200,6 +218,7 @@ export default class Player {
             this.lastDirection = this.createFireball()
             direction = this.lastDirection === Direction.Left ? 'left' : 'right'
             this.sprite.anims.play(`lucy_jump_${direction}`, true)
+            this.scene.sound.play('swoosh')
         }
 
         // npc interaction
@@ -244,6 +263,7 @@ export default class Player {
         validTargets.sort((a, b) => b.playerDistance - a.playerDistance)
 
         const target = validTargets.pop()
+        if (this.isSwordEnabled || target) this.scene.sound.play(this.isSwordEnabled ? 'sword' : 'punch')
         if (!target) return direction
 
         target.applyDamage(this.isSwordEnabled ? SWORD_DAMAGE : MELEE_DAMAGE)
