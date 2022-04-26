@@ -2,7 +2,7 @@
 
 import Level from '../components/level'
 
-const level_3 =  [[36,424],[221,486], [142,324], [387,404], [421,280], [61,203], [250, 118], [587,463], [654, 310], [766,152], [513, 120], [901,272], [1115, 382]]
+const level_3 = [[700, 525], [238, 341], [36, 424], [210, 486], [142, 324], [387, 404], [421, 280], [61, 203], [250, 118], [587, 463], [654, 310], [766, 152], [513, 120], [901, 272], [1115, 382]]
 
 
 // This should represent a single level of the game
@@ -15,7 +15,6 @@ export default class CavePath extends Level {
             nextLevel: 'victory',
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [700, 525],
             platformDefaultColor: 0x111111,
             groundColor: 0xb13e53,
             playerFireballEnabled: true,
@@ -26,7 +25,6 @@ export default class CavePath extends Level {
             ]),
             platforms: [
                 ...level_3,
-                
             ]
         })
     }
