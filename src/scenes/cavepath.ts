@@ -26,7 +26,6 @@ export default class CavePath extends Level {
             ]),
             platforms: [
                 ...level_3,
-                
             ]
         })
     }
