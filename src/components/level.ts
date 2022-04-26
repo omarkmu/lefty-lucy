@@ -73,7 +73,7 @@ export default class Level extends Phaser.Scene {
         //music
         if (this._options.backgroundMusic) {
             this.music = this.sound.add(this._options.backgroundMusic, {
-                volume: 0.5,
+                volume: 0.25,
                 loop: true
 
             })

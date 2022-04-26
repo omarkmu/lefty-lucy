@@ -154,7 +154,9 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.image('civilianblue_stand', 'assets/townspersonblue.png')
         this.load.image('civiliangreen_stand', 'assets/townspersongreen.png')
         this.load.image('civilianpurple_stand', 'assets/townspersonpurple.png')
-        this.load.image('guerrilla_stand', 'assets/resistance.png')
+        this.load.image('rebel_stand', 'assets/resistance.png')
+        this.load.image('rebelleader_stand', 'assets/resistanceleader.png')
+
     }
 
     create() {

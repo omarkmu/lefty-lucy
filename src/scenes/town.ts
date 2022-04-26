@@ -21,8 +21,9 @@ export default class Town extends Level {
             groundColor: 0xb56d3d,
             npcs: [
                 {
-                    type: 'guerrilla',
-                    spawn: [500, 525],
+                    type: 'rebel',
+                    spawn: [700, 525],
+                    interactDistance: 25,
                     interactDialogue: [
                         'Resistance Member: Girl, I\'d stay away from me if I were you. I\'m someone you don\'t want to know.',
                         'Lucy: I know who you are. I\'m not afraid of you. I believe that you know of my Father. He was once a member of your organization.',
@@ -42,6 +43,7 @@ export default class Town extends Level {
                 {
                     type: 'civilian',
                     spawn: [200, 525],
+                    interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! How\'re you?',
                         'Lucy: Hello, I\'m good, thanks.'
@@ -49,7 +51,8 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianblue',
-                    spawn: [275, 525],
+                    spawn: [350, 525],
+                    interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Wonderful weather we\'re having.',
                         'Lucy: Hello, it is isn\'t it.'
@@ -57,10 +60,20 @@ export default class Town extends Level {
                 },
                 {
                     type: 'civilianpurple',
-                    spawn: [325, 525],
+                    spawn: [500, 525],
+                    interactDistance: 25,
                     interactDialogue: [
                         'Townsfolk: Hello there! Looking for anything?',
                         'Lucy: Hello. I\'m just looking around. Thanks.'
+                    ]
+                },
+                {
+                    type: 'civiliangreen',
+                    spawn: [600, 525],
+                    interactDistance: 25,
+                    interactDialogue: [
+                        'Townsfolk: What is it? Someone stole your sweet roll?',
+                        'Lucy: What? No, I\'m just looking around.'
                     ]
                 }
             ]

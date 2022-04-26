@@ -52,7 +52,7 @@ export default class NPC {
 }
 
 
-type NPCType = 'mom' | 'civilian' | 'guerrilla' | 'civilianblue' | 'civiliangreen' | 'civilianpurple'
+type NPCType = 'mom' | 'civilian' | 'rebel' | 'civilianblue' | 'civiliangreen' | 'civilianpurple' | 'rebelleader'
 
 export interface NPCDefinition {
     type: NPCType
