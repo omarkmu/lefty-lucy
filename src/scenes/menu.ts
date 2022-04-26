@@ -39,8 +39,8 @@ export default class MainMenuScene extends Phaser.Scene {
         this.buttonSelector = this.add.image(0, 0, 'cursor_pointerFlat_shadow')
         this.selectButton(0)
 
-        this.add.text(275, 200, "Lefty Lucy", { font: "42px" })
-        this.add.text(285, 250, "Press Enter to Play!")
+        this.add.text(275, 400, "Lefty Lucy", { font: "42px" })
+        this.add.text(285, 450, "Press Enter to Play!")
     }
 
     selectButton(index: number) {

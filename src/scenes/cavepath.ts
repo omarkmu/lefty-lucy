@@ -40,7 +40,6 @@ export default class CavePath extends Level {
 
     update() {
         super.update()
-
         // check for boss defeat
         if (this.enemies[0]?.isDead) {
             this.ui.dialogue.show(Backstory1, () => this.nextLevel())
