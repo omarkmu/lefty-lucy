@@ -3,6 +3,15 @@
 import Level from '../components/level'
 
 const level_3 = [[700, 525], [238, 341], [36, 424], [210, 486], [142, 324], [387, 404], [421, 280], [61, 203], [250, 118], [587, 463], [654, 310], [766, 152], [513, 120], [901, 272], [1115, 382]]
+const Backstory1 = [
+    'Resistance Leader: You did it! You defeated Righty Tighty!',
+    ['Lucy: I did..', ' I can\'t believe it.'],
+    'Resistance Leader: I believe there\'s someone who wants to see you now.',
+    'Lucy: Oh right! Dad!',
+    'Dad: I\'m so proud of you Lucy. We can finally live without fear. Let\'s go home.',
+    'They then lived happily ever after.',
+    'The End'
+]
 
 
 // This should represent a single level of the game
@@ -34,7 +43,7 @@ export default class CavePath extends Level {
 
         // check for boss defeat
         if (this.enemies[0]?.isDead) {
-            this.nextLevel()
+            this.ui.dialogue.show(Backstory1, () => this.nextLevel())
         }
     }
 }
