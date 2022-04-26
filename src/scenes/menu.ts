@@ -2,8 +2,6 @@
 //edited by Eric Burch
 //glassPanel and cursor_pointerFlat_shadow from https://kenney.nl/assets/ui-pack-space-expansion
 
-import Phaser, { UP } from 'phaser'
-
 export default class MainMenuScene extends Phaser.Scene {
     private cursors!: any
     private buttons: Phaser.GameObjects.Image[] = []
@@ -30,6 +28,9 @@ export default class MainMenuScene extends Phaser.Scene {
     create() {
         const { width, height } = this.scale
 
+        this.add.image(0, 0, 'menu').setOrigin(0)
+
+
         // Play button
         const playButton = this.add.image(width * 0.5, height * 0.6, 'glass-panel')
             .setDisplaySize(150, 50)
@@ -37,7 +38,7 @@ export default class MainMenuScene extends Phaser.Scene {
         this.add.text(playButton.x, playButton.y, 'Play')
             .setOrigin(0.5)
 
-        playButton.on('selected', () => this.scene.start('town'))
+        playButton.on('selected', () => this.scene.start('home'))
 
         this.buttons.push(playButton)
 

@@ -2,12 +2,14 @@
 
 import 'phaser'
 
+//levels
 import Home from './scenes/home'
 import ForestPath from './scenes/forestpath'
 import Town from './scenes/town'
 import MountainPath from './scenes/mountainpath'
 import Cave from './scenes/cave'
 import CavePath from './scenes/cavepath'
+import Victory from './scenes/victory'
 
 import LoadingScreen from './scenes/loading'
 import MainMenuScene from './scenes/menu'
@@ -25,7 +27,8 @@ new Phaser.Game({
         Town,
         MountainPath,
         Cave,
-        CavePath
+        CavePath,
+        Victory
     ],
     physics: {
         default: 'arcade',

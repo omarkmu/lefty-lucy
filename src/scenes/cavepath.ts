@@ -8,9 +8,10 @@ export default class CavePath extends Level {
         super({
             name: 'cavepath',
             background: 'cavepath',
+            nextLevel: 'victory',
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [800, 490],
+            winZone: [100, 525],
             enemies: Level.generateEnemies([
                 [500, 400],
                 [1000, 525]

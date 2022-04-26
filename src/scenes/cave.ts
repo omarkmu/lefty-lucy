@@ -8,9 +8,10 @@ export default class Cave extends Level {
         super({
             name: 'cave',
             background: 'cave',
+            nextLevel: "cavepath",
             isCombatLevel: false,
             playerSpawn: [100, 525],
-            winZone: [800, 490],
+            winZone: [100, 525],
         })
     }
 }

@@ -1,6 +1,7 @@
 // Authors: Eric Burch
 
 import Level from '../components/level'
+import Cave from './cave'
 
 // This should represent a single level of the game
 export default class MountainPath extends Level {
@@ -8,9 +9,10 @@ export default class MountainPath extends Level {
         super({
             name: 'mountainpath',
             background: 'mountainpath',
+            nextLevel: "cave",
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [800, 490],
+            winZone: [100, 525],
             enemies: Level.generateEnemies([
                 [500, 400],
                 [1000, 525]
