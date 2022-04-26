@@ -19,13 +19,22 @@ export default class CavePath extends Level {
             groundColor: 0xb13e53,
             playerFireballEnabled: true,
             playerSwordEnabled: true,
-            enemies: Level.generateEnemies([
-                [500, 400],
-                [1000, 525]
-            ]),
+            enemies: [{
+                type: 'boss',
+                spawn: [200, 525]
+            }],
             platforms: [
                 ...level_3,
             ]
         })
+    }
+
+    update() {
+        super.update()
+
+        // check for boss defeat
+        if (this.enemies[0]?.isDead) {
+            this.nextLevel()
+        }
     }
 }

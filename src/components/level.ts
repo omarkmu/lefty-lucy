@@ -124,10 +124,7 @@ export default class Level extends Phaser.Scene {
         // initialize enemies
         this.enemies = (this._options.enemies ?? []).map(def => new Enemy(this, def))
 
-        this.physics.add.collider(this.enemyGroup, this.platforms, (enemySprite, platform) => {
-            const enemy = (enemySprite as any).owner
-            enemy.currentPlatform = platform
-        })
+        this.physics.add.collider(this.enemyGroup, this.platforms)
 
         this.physics.add.overlap(this.enemyGroup, this.playerProjectiles, (enemySprite, projectile) => {
             const enemy = (enemySprite as any).owner
@@ -187,7 +184,9 @@ export default class Level extends Phaser.Scene {
         const w = zone[2] ?? ZONE_SIZE_DEFAULT
         const h = zone[3] ?? w
 
-        const sprite = this.zoneGroup.create(zone[0], zone[1], undefined, undefined, false)
+        const image = id === 'win' ? 'flag' : undefined
+        const visible = id === 'win'
+        const sprite = this.zoneGroup.create(zone[0], zone[1], image, undefined, visible)
         sprite.setSize(w, h, 0)
         sprite.zoneID = id
 

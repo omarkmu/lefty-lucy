@@ -15,6 +15,7 @@ const RAND_PAUSE_MIN = 1000
 const RAND_PAUSE_MAX = 3000
 
 const FORGET_TIME = 1000
+const REPOSITION_DELAY = 2500
 
 const enum AIMode {
     None,
@@ -55,7 +56,7 @@ export default class Enemy {
 
     health: number
     initialDirection: Direction
-    currentPlatform: Phaser.Types.Physics.Arcade.GameObjectWithBody
+    lastX: number
 
     attackDamage: number
     attackDelay: number
@@ -70,6 +71,7 @@ export default class Enemy {
 
     canRandomPause: boolean = false
     canPauseEvent: Phaser.Time.TimerEvent
+    repositionEvent: Phaser.Time.TimerEvent
     savedVelocity: number
 
     minX?: number
@@ -99,6 +101,27 @@ export default class Enemy {
             : Direction.Right
         this.lastDirection = this.initialDirection
 
+        this.lastX = this.spawn.x
+
+        this.repositionEvent = this.scene.time.addEvent({
+            delay: REPOSITION_DELAY,
+            loop: true,
+            callback: () => {
+                if (this.isDead || this.currentMode !== AIMode.Patrol) return
+
+                if (this.lastX === this.sprite.body.x) {
+                    if (this.sprite.body.velocity.x === 0) {
+                        const newDirection = this.lastDirection = Direction.Left ? -1 : 1
+                        this.sprite.setVelocityX(newDirection * VELOCITY)
+                    } else {
+                        this.sprite.setVelocityX(this.sprite.body.velocity.x * -1)
+                    }
+                }
+
+                this.lastX = this.sprite.body.x
+            }
+        })
+
         this.create()
     }
 
@@ -107,7 +130,6 @@ export default class Enemy {
     get isDead() { return this.health <= 0 }
 
     create() {
-        const direction = this.lastDirection === Direction.Left ? 'left' : 'right'
         const sprite = this.scene.enemyGroup.create(this.spawn.x, this.spawn.y, `${this.type}_walk`)
             .setCollideWorldBounds(true)
 
@@ -163,8 +185,8 @@ export default class Enemy {
 
         const isWithinAttackRange = dist < this.attackRange
         if (!isWithinAttackRange) {
-            const minX = this.minX ?? this.currentPlatform?.body.x ?? 0
-            const maxX = this.maxX ?? this.currentPlatform?.body.width ?? this.scene.background.width
+            const minX = this.minX ?? 0
+            const maxX = this.maxX ?? this.scene.background.width
             const isWithinX = Phaser.Math.Distance.Between(x, 0, this.scene.player.x, 0) < this.sprite.width / 2
 
             // follow player
@@ -198,8 +220,8 @@ export default class Enemy {
             return
         }
 
-        const minX = this.minX ?? this.currentPlatform?.body.x ?? 0
-        const maxX = this.maxX ?? this.currentPlatform?.body.width ?? this.scene.background.width
+        const minX = this.minX ?? 0
+        const maxX = this.maxX ?? this.scene.background.width
         const x = this.sprite.body.x
 
         if (x <= minX || x >= maxX - this.sprite.width) {

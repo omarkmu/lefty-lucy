@@ -81,6 +81,7 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.image('cavepath', 'assets/innercave.png')
         this.load.image('platform', 'assets/5.png')
         this.load.image('sideways', 'assets/sideways.png')
+        this.load.image('flag', 'assets/flag.png')
 
         //sound effects and songs
         this.load.audio('lvl1', 'assets/plucky.mp3')
@@ -96,6 +97,7 @@ export default class LoadingScreen extends Phaser.Scene {
 
         // player assets
         this.load.image('fireball', 'assets/fireballpix.png')
+        this.load.image('lucy_idle', 'assets/lucy_front.png')
         this.load.spritesheet('lucy_jump_and_punch', 'assets/lucyjumpandpunch.png', {
             frameWidth: 32,
             frameHeight: 32,
@@ -164,6 +166,11 @@ export default class LoadingScreen extends Phaser.Scene {
         this.ellipsisEvent?.remove()
 
         // player animations
+        this.anims.create({
+            key: 'lucy_idle',
+            frames: [{ frame: 0 }],
+            defaultTextureKey: 'lucy_idle'
+        })
         this.anims.create({
             key: 'lucy_stand_left',
             frames: [{ frame: 1 }],
