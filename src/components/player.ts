@@ -60,11 +60,13 @@ export default class Player {
         this.isFireballEnabled = _options.isFireballEnabled
         this.isSwordEnabled = _options.isSwordEnabled
 
+
         if (this.isSwordEnabled) {
             this.attackCooldowns[0] = SWORD_COOLDOWN
         }
 
         this.create()
+        console.log(this)
     }
 
     get x() { return this.sprite.body.x }
