@@ -47,10 +47,10 @@ export default class Player {
     isFireballEnabled: boolean
     isSwordEnabled: boolean
 
-    constructor(public scene: Level, options: PlayerOptions) {
-        this.spawn = options.spawn
-        this.isFireballEnabled = options.isFireballEnabled
-        this.isSwordEnabled = options.isSwordEnabled
+    constructor(public scene: Level, private _options: PlayerOptions) {
+        this.spawn = _options.spawn
+        this.isFireballEnabled = _options.isFireballEnabled
+        this.isSwordEnabled = _options.isSwordEnabled
 
         if (this.isSwordEnabled) {
             this.attackCooldowns[0] = SWORD_COOLDOWN
@@ -93,11 +93,12 @@ export default class Player {
     create() {
         this.lastDirection = Direction.Right
 
-        const sprite: any = this.scene.physics.add.sprite(this.spawn.x, this.spawn.y, 'lucy_walk')
+        const sprite: any = this.scene.physics.add.sprite(this.spawn?.x ?? 0, this.spawn?.y ?? 0, 'lucy_walk')
             .setCollideWorldBounds(true)
 
         sprite.owner = this
         this.sprite = sprite
+        sprite.setVisible(this._options.visible)
 
         this.keys = {
             up: this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -199,6 +200,16 @@ export default class Player {
             direction = this.lastDirection === Direction.Left ? 'left' : 'right'
             this.sprite.anims.play(`lucy_jump_${direction}`, true)
         }
+
+        // npc interaction
+        if (keyJustDown(this.keys.interact)) {
+            for (const npc of this.scene.npcs) {
+                if (npc.playerCanInteract) {
+                    npc.startInteraction()
+                    break
+                }
+            }
+        }
     }
 
     determineAttackDirection(attack: 0 | 1) {
@@ -277,4 +288,5 @@ interface PlayerOptions {
     spawn: SpawnLocation
     isFireballEnabled: boolean
     isSwordEnabled: boolean
+    visible: boolean
 }

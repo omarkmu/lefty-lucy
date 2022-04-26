@@ -65,6 +65,8 @@ export default class LoadingScreen extends Phaser.Scene {
 
         // ui assets
         this.load.image('heart', 'assets/heart.png')
+        this.load.image('glass-panel', 'assets/glassPanel.png')
+        this.load.image('cursor_pointerFlat_shadow', 'assets/cursor_pointerFlat_shadow.png')
 
         // level assets
         this.load.image('menu', 'assets/leftylucyfront2.png')
@@ -137,6 +139,11 @@ export default class LoadingScreen extends Phaser.Scene {
             startFrame: 0,
             endFrame: 3,
         })
+
+        // npc assets
+        this.load.image('mom_stand', 'assets/lucymomfront.png')
+        this.load.image('civilian_stand', 'assets/townsperson.png')
+        this.load.image('guerrilla_stand', 'assets/resistance.png')
     }
 
     create() {
