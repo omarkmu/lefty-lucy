@@ -13,7 +13,8 @@ export default class MountainPath extends Level {
             nextLevel: "cave",
             isCombatLevel: true,
             playerSpawn: [100, 525],
-            winZone: [100, 525],
+            winZone: [700, 525],
+            playerFireballEnabled: true,
             enemies: Level.generateEnemies([
                 [500, 400],
                 [1000, 525]

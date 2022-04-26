@@ -34,7 +34,7 @@ export default class NPC {
 
     create() {
         this.sprite = this.scene.npcGroup.create(this.spawn.x, this.spawn.y, `${this._options.type}_stand`)
-            .setCollideWorldBounds(true)      
+            .setCollideWorldBounds(true)
         this.text = this.scene.make.text({
             x: this.spawn.x,
             y: this.spawn.y - this.sprite.height / 2,
@@ -52,7 +52,7 @@ export default class NPC {
 }
 
 
-type NPCType = 'mom' | 'civilian' | 'guerrilla'
+type NPCType = 'mom' | 'civilian' | 'guerrilla' | 'civilianblue' | 'civiliangreen' | 'civilianpurple'
 
 export interface NPCDefinition {
     type: NPCType
