@@ -187,7 +187,9 @@ export default class Level extends Phaser.Scene {
         const w = zone[2] ?? ZONE_SIZE_DEFAULT
         const h = zone[3] ?? w
 
-        const sprite = this.zoneGroup.create(zone[0], zone[1], undefined, undefined, false)
+        const image = id === 'win' ? 'flag' : undefined
+        const visible = id === 'win'
+        const sprite = this.zoneGroup.create(zone[0], zone[1], image, undefined, visible)
         sprite.setSize(w, h, 0)
         sprite.zoneID = id
 

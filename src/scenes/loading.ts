@@ -81,6 +81,7 @@ export default class LoadingScreen extends Phaser.Scene {
         this.load.image('cavepath', 'assets/innercave.png')
         this.load.image('platform', 'assets/5.png')
         this.load.image('sideways', 'assets/sideways.png')
+        this.load.image('flag', 'assets/flag.png')
 
         //sound effects and songs
         this.load.audio('lvl1', 'assets/plucky.mp3')
