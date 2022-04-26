@@ -8,9 +8,10 @@ export default class Town extends Level {
         super({
             name: 'town',
             background: 'town',
+            nextLevel: "mountainpath",
             isCombatLevel: false,
             playerSpawn: [100, 525],
-            winZone: [800, 490],
+            winZone: [100, 525],
         })
     }
 }

@@ -64,6 +64,8 @@ export default class Level extends Phaser.Scene {
             // Borrowed code from https://www.vishalon.net/blog/phaser3-stretch-background-image-to-cover-canvas
             this.background.displayWidth = this.sys.canvas.width;
             this.background.displayHeight = this.sys.canvas.height;
+            this.background.width = this.sys.canvas.width;
+            this.background.height = this.sys.canvas.height;
         }
 
         // initialize camera and physics bounds
@@ -79,7 +81,7 @@ export default class Level extends Phaser.Scene {
         this.platforms = this.physics.add.staticGroup()
 
         this.addPlatform(0, 575, this.background.width, 1) // ground platform
-        for (let i = 0; i < level_1.length; i++) {
+        /*for (let i = 0; i < level_1.length; i++) {
             const [x, y] = level_1[i]
             this.addPlatform(x * 2, y * 2, 278, 46, 'platform')
         }
@@ -87,7 +89,7 @@ export default class Level extends Phaser.Scene {
             const [x, y] = level_1_s[i]
             this.addPlatform(x * 2, y * 2, 15, 70, 'sideways')
         }
-
+*/
         // initialize zones
         this.zoneGroup = this.physics.add.staticGroup()
         this.zoneCallbacks = {}
@@ -193,6 +195,7 @@ export default class Level extends Phaser.Scene {
 
     nextLevel() {
         this.scene.start(this._options.nextLevel ?? 'main-menu')
+        console.log(this._options.name, this._options.nextLevel)
     }
 
     resetLevel() {
