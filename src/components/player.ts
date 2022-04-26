@@ -8,7 +8,7 @@ const keyJustDown = Phaser.Input.Keyboard.JustDown
 
 const INVINCIBILITY_DELAY = 100
 const X_VELOCITY = 160
-const Y_VELOCITY = 200
+const Y_VELOCITY = 250
 
 const MELEE_COOLDOWN = 500
 const MELEE_RANGE = 50
