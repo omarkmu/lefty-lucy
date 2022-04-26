@@ -18,3 +18,30 @@ export interface Keys extends Omit<Phaser.Types.Input.Keyboard.CursorKeys, 'shif
     interact: Phaser.Input.Keyboard.Key
     enter: Phaser.Input.Keyboard.Key
 }
+
+export interface EnemyDefinition {
+    /**
+     * The [X, Y] location of the enemy spawn.
+     */
+    spawn: [number, number]
+    attackRange?: number
+    attackDamage?: number
+    attackDelay?: number
+    health?: number
+    hearingRange?: number
+    visionRange?: number
+    /**
+     * Set to disable patrol behavior.
+     */
+    disablePatrol?: true
+    /**
+     * A minimum and maximum X value to patrol.
+     * If excluded, the enemy will patrol the entirety of whatever platform it's standing on.
+     */
+    patrolRange?: [number, number]
+}
+
+export interface SpawnLocation {
+    x: number
+    y: number
+}

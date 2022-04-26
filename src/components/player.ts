@@ -71,7 +71,7 @@ export default class Player {
         }
 
         if (value < this._lives) {
-        
+                  // TODO: hurt sound effect
         } else {
             // TODO: (maybe) heal sound effect
         }
