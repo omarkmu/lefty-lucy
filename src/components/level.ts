@@ -1,15 +1,16 @@
 // Authors: Omar Muhammad
 // Base code from http://phaser.io/tutorials/making-your-first-phaser-3-game
 
-import { EnemyDefinition } from '../constants'
-import { level_1, level_2, level_3} from '../constants'
+import { CANVAS_HEIGHT, EnemyDefinition } from '../constants'
+import { level_1, level_2, level_3 } from '../constants'
 import { level_1_s, level_2_s, level_3_s } from '../constants'
 import Enemy from './enemy'
+import NPC, { NPCDefinition } from './npc'
 import Player from './player'
 import UI from './ui'
 
 
-const ZONE_SIZE_DEFAULT = 50
+const ZONE_SIZE_DEFAULT = 32
 const LEVEL_COMPLETE_DIALOGUE = [
     'Level complete. Press Enter to continue.'
 ]
@@ -36,13 +37,16 @@ export default class Level extends Phaser.Scene {
     background: Phaser.GameObjects.Image
     platforms: Phaser.Physics.Arcade.StaticGroup
     playerProjectiles: Phaser.Physics.Arcade.Group
+    npcGroup: Phaser.Physics.Arcade.Group
     enemyGroup: Phaser.Physics.Arcade.Group
     zoneGroup: Phaser.Physics.Arcade.StaticGroup
     zoneCallbacks: Record<string, () => void>
     player: Player
     enemies: Enemy[]
+    npcs: NPC[]
     ui: UI
-    
+    music: any
+
 
     constructor(private _options: SceneOptions) {
         super(_options.name)
@@ -59,6 +63,24 @@ export default class Level extends Phaser.Scene {
         // initialize background
         this.background = this.add.image(0, 0, this._options.background)
         this.background.setOrigin(0)
+
+        if (this.background.height < CANVAS_HEIGHT) {
+            // Borrowed code from https://www.vishalon.net/blog/phaser3-stretch-background-image-to-cover-canvas
+            this.background.displayWidth = this.sys.canvas.width;
+            this.background.displayHeight = this.sys.canvas.height;
+            this.background.width = this.sys.canvas.width;
+            this.background.height = this.sys.canvas.height;
+        }
+
+        //music
+        if (this._options.backgroundMusic) {
+            this.music = this.sound.add(this._options.backgroundMusic, {
+                volume: 0.5,
+                loop: true
+
+            })
+            this.music.play()
+        }
 
         // initialize camera and physics bounds
         this.cameras.main.setBounds(0, 0, this.background.width, this.background.height)
@@ -93,7 +115,12 @@ export default class Level extends Phaser.Scene {
         }
 
         this.enemyGroup = this.physics.add.group()
+        this.npcGroup = this.physics.add.group()
         this.playerProjectiles = this.physics.add.group()
+
+        // initialize npcs
+        this.npcs = (this._options.npcs ?? []).map(def => new NPC(this, def))
+        this.physics.add.collider(this.npcGroup, this.platforms)
 
         // initialize enemies
         this.enemies = (this._options.enemies ?? []).map(def => new Enemy(this, def))
@@ -114,15 +141,16 @@ export default class Level extends Phaser.Scene {
         // initialize player
         this.player = new Player(this, {
             spawn: {
-                x: this._options.playerSpawn[0],
-                y: this._options.playerSpawn[1],
+                x: this._options.playerSpawn?.[0] ?? 0,
+                y: this._options.playerSpawn?.[1] ?? 0,
             },
             isFireballEnabled: this._options.playerFireballEnabled ?? false,
             isSwordEnabled: this._options.playerSwordEnabled ?? false,
+            visible: this._options.loadPlayer !== false
         })
 
         this.cameras.main.startFollow(this.player.sprite, true, 0.08, 0.08)
-        
+
         this.physics.add.collider(this.player.sprite, this.platforms)
         this.physics.add.overlap(this.player.sprite, this.zoneGroup, (_, zone: any) => {
             this.zoneCallbacks[zone.zoneID]?.()
@@ -147,6 +175,10 @@ export default class Level extends Phaser.Scene {
         for (const enemy of this.enemies) {
             if (enemy.isDead) continue
             enemy.update()
+        }
+
+        for (const npc of this.npcs) {
+            npc.update()
         }
 
         this.player.update()
@@ -188,6 +220,7 @@ export default class Level extends Phaser.Scene {
     }
 
     nextLevel() {
+        this.music?.pause()
         this.scene.start(this._options.nextLevel ?? 'main-menu')
     }
 
@@ -221,6 +254,10 @@ interface SceneOptions {
      */
     background: string
     /**
+     * The key (provided to load.audio) of the background music for this scene.
+     */
+    backgroundMusic?: string
+    /**
      * The name of the next level to load after this level is completed.
      * Returns to the main menu if no next level is specified.
      */
@@ -230,9 +267,13 @@ interface SceneOptions {
      */
     isCombatLevel?: boolean
     /**
+     * Set to false to not load the player.
+     */
+    loadPlayer?: false
+    /**
      * The spawn location of the player. Specified as [X, Y].
      */
-    playerSpawn: [number, number]
+    playerSpawn?: [number, number]
     /**
      * Whether the fireball attack is enabled in this level.
      * Default: false.
@@ -247,6 +288,10 @@ interface SceneOptions {
      * Information about enemies which should be spawned.
      */
     enemies?: EnemyDefinition[]
+    /**
+     * NPC definitions
+     */
+    npcs?: NPCDefinition[]
     /**
      * A zone that describes the target area the player must enter to pass the level.
      * Specified as [X, Y] for default width/height, [X, Y, W] for height = W,

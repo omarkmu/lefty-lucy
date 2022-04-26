@@ -49,6 +49,7 @@ export default class DialogueManager {
         }
 
         this.currentIndex = -1
+        this.ui.scene.player.sprite.setVelocity(0)
         this.lines = processedLines
         this.onComplete = onComplete
         this.moveNext()

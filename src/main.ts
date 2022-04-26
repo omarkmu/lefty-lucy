@@ -1,7 +1,17 @@
-// Authors: Omar Muhammad
+// Authors: Omar Muhammad / Eric Burch
 
 import 'phaser'
-import Game from './scenes/game'
+
+//levels
+import Backstory from './scenes/backstory'
+import Home from './scenes/home'
+import ForestPath from './scenes/forestpath'
+import Town from './scenes/town'
+import MountainPath from './scenes/mountainpath'
+import Cave from './scenes/cave'
+import CavePath from './scenes/cavepath'
+import Victory from './scenes/victory'
+
 import LoadingScreen from './scenes/loading'
 import MainMenuScene from './scenes/menu'
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants'
@@ -13,13 +23,20 @@ new Phaser.Game({
     scene: [
         LoadingScreen,
         MainMenuScene,
-        Game,
+        Backstory,
+        Home,
+        ForestPath,
+        Town,
+        MountainPath,
+        Cave,
+        CavePath,
+        Victory
     ],
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
-            gravity: { y: 200 }
+            debug: true,
+            gravity: { y: 325 }
         }
     },
 })
