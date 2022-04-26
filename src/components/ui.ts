@@ -1,6 +1,6 @@
 // Authors: Omar Muhammad
 
-import type Scene from './scene'
+import type Level from './level'
 import type { Keys } from '../constants'
 import DialogueManager from './dialogue'
 
@@ -11,12 +11,9 @@ export default class UI {
     heartSprites: Phaser.GameObjects.Image[] = []
     dialogue: DialogueManager
 
-    constructor(public scene: Scene) {
+    constructor(public scene: Level) {
         this.dialogue = new DialogueManager(this)
-    }
-
-    preload() {
-        this.scene.load.image('heart', 'assets/heart.png')
+        this.create()
     }
 
     create() {
