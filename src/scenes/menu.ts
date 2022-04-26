@@ -2,10 +2,10 @@
 //edited by Eric Burch
 //glassPanel and cursor_pointerFlat_shadow from https://kenney.nl/assets/ui-pack-space-expansion
 
-import Phaser from 'phaser'
+import Phaser, { UP } from 'phaser'
 
 export default class MainMenuScene extends Phaser.Scene {
-    private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
+    private cursors!: any
     private buttons: Phaser.GameObjects.Image[] = []
     private selectedButtonIndex = 0
     private buttonSelector!: Phaser.GameObjects.Image
@@ -15,7 +15,11 @@ export default class MainMenuScene extends Phaser.Scene {
     }
 
     init() {
-        this.cursors = this.input.keyboard.createCursorKeys()
+        this.cursors = {
+            enter: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER),
+            up: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP),
+            down: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN),
+        }
     }
 
     preload() {
@@ -33,7 +37,7 @@ export default class MainMenuScene extends Phaser.Scene {
         this.add.text(playButton.x, playButton.y, 'Play')
             .setOrigin(0.5)
 
-        playButton.on('selected', () => this.scene.start('game'))
+        playButton.on('selected', () => this.scene.start('town'))
 
         this.buttons.push(playButton)
 
@@ -41,7 +45,7 @@ export default class MainMenuScene extends Phaser.Scene {
         this.selectButton(0)
 
         this.add.text(275, 200, "Lefty Lucy", { font: "42px" })
-        this.add.text(285, 250, "Press Spacebar to play")
+        this.add.text(285, 250, "Press Enter to Play!")
     }
 
     selectButton(index: number) {
@@ -88,7 +92,7 @@ export default class MainMenuScene extends Phaser.Scene {
     update() {
         const upJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.up!)
         const downJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.down!)
-        const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.space!)
+        const enterJustPressed = Phaser.Input.Keyboard.JustDown(this.cursors.enter!)
 
         if (upJustPressed) {
             this.selectNextButton(-1)
@@ -96,7 +100,7 @@ export default class MainMenuScene extends Phaser.Scene {
         else if (downJustPressed) {
             this.selectNextButton(1)
         }
-        else if (spaceJustPressed) {
+        else if (enterJustPressed) {
             this.confirmSelection()
         }
     }
